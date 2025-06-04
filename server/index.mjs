@@ -13,7 +13,7 @@ import {
   listCards,
   getCardById,
   createGame,
-  userHistory,
+  getGameByUser,
   createInitialCards,
   listInitialCardsByGame,
   createRound,
@@ -172,7 +172,7 @@ app.post(
 
 app.get("/api/games/:username", isLoggedIn, async (req, res) => {
   try {
-    const games = await userHistory(req.params.username);
+    const games = await getGameByUser(req.params.username);
     res.json(games);
   } catch {
     res.status(500).end();

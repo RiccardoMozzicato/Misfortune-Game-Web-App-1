@@ -121,15 +121,11 @@ export const createGame = (game) => {
 };
 
 //to fix: espandere le info per la cronologia (initial cards, per ogni round, card.name ) farla diventare 'cronologia'
-export const userHistory = (username) => {
+export const getGameByUser = (username) => {
   return new Promise((resolve, reject) => {
     const sql = `
-      SELECT g.*
-      FROM Game g
+      Select * FROM Game g
       JOIN User u ON g.userId = u.id
-      JOIN InitialCards ic ON g.id = ic.gameId
-      JOIN Card c ON ic.cardId = c.id
-      JOIN Round r ON g.id = r.gameId AND r.cardId = c.id
       WHERE u.username = ?
     `;
     db.all(sql, [username], (err, rows) => {

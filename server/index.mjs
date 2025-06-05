@@ -40,9 +40,8 @@ app.use(cors(corsOptions));
 // Passport setup
 passport.use(
   new LocalStrategy(async function verify(username, password, cb) {
-    const user = await getUserByUsername(username);
-    if (!user || user.password !== password)
-      return cb(null, false, "Incorrect username or password.");
+    const user = await getUserByUsername(username, password);
+    if (!user) return cb(null, false, "Incorrect username or password.");
     return cb(null, user);
   })
 );
@@ -171,6 +170,7 @@ app.post(
 );
 
 app.get("/api/games/:username", isLoggedIn, async (req, res) => {
+  console.log("Fetching games for user:", req.params.username);
   try {
     const games = await getGameByUser(req.params.username);
     res.json(games);
@@ -250,8 +250,24 @@ app.get("/api/rounds-won/:gameId", isLoggedIn, async (req, res) => {
 });
 
 // AUTH ROUTES
-app.post("/api/sessions/", passport.authenticate("local"), function (req, res) {
-  return res.status(201).json(req.user);
+app.post("/api/sessions", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      console.error("Authentication error:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    if (!user) {
+      console.warn("Authentication failed:", info);
+      return res.status(401).json({ error: info.message || "Unauthorized" });
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        console.error("Login error:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      return res.status(201).json(req.user);
+    });
+  })(req, res, next);
 });
 
 app.get("/api/sessions/current", (req, res) => {

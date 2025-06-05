@@ -32,13 +32,28 @@ export const listUsers = () => {
   });
 };
 
-export const getUserByUsername = (username) => {
+export const getUserByUsername = (username, password) => {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM User WHERE username = ?";
+    const sql = "SELECT * FROM user WHERE username = ?";
     db.get(sql, [username], (err, row) => {
-      if (err) reject(err);
-      else
-        resolve(row ? new User(row.id, row.username, row.password) : undefined);
+      if (err) {
+        reject(err);
+      } else if (row === undefined) {
+        resolve(false);
+      } else {
+        const user = { id: row.id, username: row.username };
+        crypto.scrypt(password, row.salt, 16, function (err, hashedPassword) {
+          if (err) reject(err);
+          if (
+            !crypto.timingSafeEqual(
+              Buffer.from(row.password, "hex"),
+              hashedPassword
+            )
+          )
+            resolve(false);
+          else resolve(user);
+        });
+      }
     });
   });
 };

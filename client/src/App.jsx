@@ -1,35 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import { Route, Routes, Navigate } from "react-router";
+import "./App.css";
+import DefaultLayout from "./components/DefaultLayout";
+import { LoginForm } from "./components/AuthComponents";
+import Homepage from "./components/Homepage";
+
+import API from "./API/API.mjs";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [message, setMessage] = useState("");
+  const [user, setUser] = useState("");
+  const [games, setGames] = useState([]);
+  useEffect(() => {
+    if (!loggedIn) return;
+    const allGames = async () => {
+      const games = await API.getGames(user.username);
+      setGames(games);
+      console.log(games);
+    };
+    allGames();
+  }, [user.username]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const user = await API.getUserInfo(); // we have the user info here
+      setLoggedIn(true);
+      setUser(user);
+    };
+    checkAuth();
+  }, []);
+
+  const handleLogin = async (credentials) => {
+    try {
+      const user = await API.logIn(credentials);
+      setLoggedIn(true);
+      setMessage({ msg: `Welcome, ${user.username}!`, type: "success" });
+      setUser(user);
+    } catch (err) {
+      setMessage({ msg: err, type: "danger" });
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Routes>
+      <Route element={<DefaultLayout loggedIn={loggedIn} />}>
+        <Route
+          path="/login"
+          element={
+            loggedIn ? (
+              <Navigate replace to="/" />
+            ) : (
+              <LoginForm handleLogin={handleLogin} />
+            )
+          }
+        />
+        <Route path="/" element={<Homepage games={games} />} />
+      </Route>
+    </Routes>
+  );
 }
 
-export default App
+export default App;

@@ -7,14 +7,15 @@ import Homepage from "./components/Homepage";
 
 import API from "./API/API.mjs";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useUser } from "./context/userContext.jsx";
+import NewGame from "./components/NewGame.jsx";
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [message, setMessage] = useState("");
-  const [user, setUser] = useState("");
   const [games, setGames] = useState([]);
+  const { loggedIn, setLoggedIn, user, setUser } = useUser();
+
   useEffect(() => {
-    if (!loggedIn) return;
+    if (loggedIn == false) return;
     const allGames = async () => {
       const games = await API.getGames(user.username);
       setGames(games);
@@ -32,31 +33,15 @@ function App() {
     checkAuth();
   }, []);
 
-  const handleLogin = async (credentials) => {
-    try {
-      const user = await API.logIn(credentials);
-      setLoggedIn(true);
-      setMessage({ msg: `Welcome, ${user.username}!`, type: "success" });
-      setUser(user);
-    } catch (err) {
-      setMessage({ msg: err, type: "danger" });
-    }
-  };
-
   return (
     <Routes>
-      <Route element={<DefaultLayout loggedIn={loggedIn} />}>
+      <Route element={<DefaultLayout />}>
         <Route
           path="/login"
-          element={
-            loggedIn ? (
-              <Navigate replace to="/" />
-            ) : (
-              <LoginForm handleLogin={handleLogin} />
-            )
-          }
+          element={loggedIn ? <Navigate replace to="/" /> : <LoginForm />}
         />
         <Route path="/" element={<Homepage games={games} />} />
+        <Route path="/new-game" element={<NewGame />} />
       </Route>
     </Routes>
   );

@@ -20,7 +20,7 @@ import {
   listRoundsByGame,
   listRoundsWonByGame,
 } from "./dao.mjs";
-
+import dayjs from "dayjs";
 // init express
 const app = express();
 const port = 3001;
@@ -148,13 +148,8 @@ app.post(
 // GAME ROUTES
 app.post(
   "/api/games/",
-  isLoggedIn,
-  [
-    check("createdAt").notEmpty(),
-    check("userId").isNumeric(),
-    check("totalCards").isNumeric(),
-    check("outcome").notEmpty(),
-  ],
+  //isLoggedIn,
+  [check("createdAt").notEmpty(), check("userId").isNumeric()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -198,12 +193,43 @@ app.post(
   }
 );
 
-app.get("/api/initial-cards/:gameId", isLoggedIn, async (req, res) => {
+app.get("/api/start-game", isLoggedIn, async (req, res) => {
   try {
-    const cards = await listInitialCardsByGame(req.params.gameId);
-    res.json(cards);
-  } catch {
-    res.status(500).end();
+    const gameId = await createGame({
+      createdAt: new dayjs().toISOString(),
+      userId: req.user.id, // Assuming a user ID of 1 for testing purposes
+    });
+
+    const allCards = await listCards();
+    const shuffled = allCards.sort(() => Math.random() - 0.5);
+
+    const initialCards = shuffled.slice(0, 3);
+
+    await createInitialCards(
+      gameId,
+      initialCards.map((card) => card.id)
+    );
+
+    const allCardsWithoutInitial = allCards.filter(
+      (card) => !initialCards.includes(card)
+    );
+
+    const roundCards = allCardsWithoutInitial.slice(0, 5);
+
+    res.status(201).json({
+      gameId,
+      initialCards,
+      roundCards: roundCards.map((card) => ({
+        id: card.id,
+        name: card.name,
+        url: card.url,
+        theme: card.theme,
+      })),
+    });
+  } catch (e) {
+    console.error("Error starting game:", e);
+    res.status(503).json({ error: "Impossible to start the game." });
+    return;
   }
 });
 

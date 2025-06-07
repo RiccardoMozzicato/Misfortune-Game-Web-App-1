@@ -207,6 +207,33 @@ export const listInitialCardsByGame = (gameId) => {
   });
 };
 
+export const getInitialCardsByGame = (gameId) => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT ic.id, c.name, c.url, c.misfortune_index, c.theme
+      FROM InitialCards ic
+      JOIN Card c ON ic.cardId = c.id
+      WHERE ic.gameId = ?
+    `;
+    db.all(sql, [gameId], (err, rows) => {
+      if (err) reject(err);
+      else
+        resolve(
+          rows.map(
+            (row) =>
+              new initialCards(
+                row.id,
+                row.name,
+                row.url,
+                row.misfortune_index,
+                row.theme
+              )
+          )
+        );
+    });
+  });
+};
+
 /** ROUND DAO **/
 
 export const createRound = (round) => {

@@ -2,10 +2,10 @@ import { Alert, Container, Row } from "react-bootstrap";
 import { Link, Navigate, Outlet } from "react-router";
 import NavHeader from "./NavHeader.jsx";
 
-function DefaultLayout(props) {
+function DefaultLayout() {
   return (
     <>
-      <NavHeader loggedIn={props.loggedIn} handleLogout={props.handleLogout} />
+      <NavHeader />
       <Container fluid="lg">
         <Outlet />
       </Container>

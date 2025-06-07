@@ -1,4 +1,5 @@
 const SERVER_URL = "http://localhost:3001";
+import dayjs from "dayjs";
 
 const logIn = async (credentials) => {
   const response = await fetch(SERVER_URL + "/api/sessions", {
@@ -46,6 +47,63 @@ const getGames = async (username) => {
   }
 };
 
-const API = { logIn, getUserInfo, getGames };
+const createGame = async (userId) => {
+  const response = await fetch(`${SERVER_URL}/api/games/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      createdAt: dayjs().toISOString(),
+      userId,
+    }),
+  });
+
+  if (response.ok) {
+    const game = await response.json();
+    return game;
+  } else {
+    throw new Error("Failed to create game");
+  }
+};
+
+const getAllCards = async () => {
+  const response = await fetch(`${SERVER_URL}/api/cards`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    const cards = await response.json();
+    return cards;
+  } else {
+    throw new Error("Failed to fetch initial cards");
+  }
+};
+
+const startGame = async () => {
+  const response = await fetch(`${SERVER_URL}/api/start-game`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    const cards = await response.json();
+    console.log("Cards received from startGame:", cards);
+    return cards;
+  } else {
+    throw new Error("Failed to fetch game cards");
+  }
+};
+
+const API = {
+  logIn,
+  getUserInfo,
+  getGames,
+  createGame,
+  getAllCards,
+  startGame,
+};
 
 export default API;

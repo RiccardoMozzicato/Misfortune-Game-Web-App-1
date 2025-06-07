@@ -1,8 +1,10 @@
 import { Link } from "react-router";
 import { Button, Form } from "react-bootstrap";
 import { useActionState } from "react";
+import { useUser } from "../context/userContext.jsx";
 
-function LoginForm(props) {
+function LoginForm() {
+  const { handleLogin } = useUser();
   const [state, formAction, isPending] = useActionState(loginFunction, {
     username: "",
     password: "",
@@ -15,7 +17,7 @@ function LoginForm(props) {
     };
 
     try {
-      await props.handleLogin(credentials);
+      await handleLogin(credentials);
       return { success: true };
     } catch (error) {
       return { error: "Login failed. Check your credentials." };

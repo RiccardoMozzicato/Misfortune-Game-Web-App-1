@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "react-router";
 import { Container, Col, Button } from "react-bootstrap";
 
 function Homepage(props) {
@@ -11,7 +12,9 @@ function Homepage(props) {
             This is a simple homepage for our application. You can add more
             content here as needed.
           </p>
-          <Button>Nuova Partita</Button>
+          <Button as={Link} to="/new-game">
+            Nuova Partita
+          </Button>
         </Col>
       </Container>
     </>

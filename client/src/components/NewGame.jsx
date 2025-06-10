@@ -93,6 +93,8 @@ function NewGame() {
       setError("Errore nel postare il round.");
       return;
     }
+
+    console.log("Initial Cards:", initialCards);
   };
 
   const handleCompare = async (misfortuneLeft = 0, misfortuneRight = 100) => {
@@ -122,6 +124,7 @@ function NewGame() {
         (a, b) => a.misfortune_index - b.misfortune_index
       );
       setInitialCards(sortedInitialCards);
+      setGameCards(initialCards);
     }
 
     setRoundResult(result.won);
@@ -130,20 +133,29 @@ function NewGame() {
   if (gameStarted) {
     return (
       <>
+        {/* Se il numero di carte è 6 e lo stato del round è minore o uguale a 5,
+        significa che la partita è vinta*/}
+
+        {gameCards.length === 6 && roundState <= 5 && <h1> Partita Vinta! </h1>}
+
         <h1>
           {timeLeft > 28 && roundState == 1
             ? "Partita iniziata"
             : "Round: " + roundState}
         </h1>
-
         <Container>
           <Row>
             {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}
             Round Card:
-            {currentCard && <Cards cards={currentCard} roundCard={true} />}
+            {currentCard && (
+              <Cards
+                cards={currentCard}
+                // Passo roundCard == true per indicare che questa è la carta del round corrente
+                roundCard={true}
+              />
+            )}
           </Row>
         </Container>
-
         <p>Your cards:</p>
         <Container fluid>
           <Row>
@@ -152,8 +164,10 @@ function NewGame() {
                 <Col xl="2">
                   <Cards
                     cards={card}
+                    // Se roundResult è diverso da null, significa che il round è finito e non posso più confrontare le carte
                     disable={roundResult}
                     key={index}
+                    // Passo al componente Cards le funzioni handleCompare, con paramentri differenti
                     prev={() =>
                       handleCompare(
                         initialCards[index - 1]?.misfortune_index,
@@ -161,7 +175,17 @@ function NewGame() {
                       )
                     }
                     next={() =>
-                      handleCompare(initialCards[index]?.misfortune_index, 100)
+                      index === initialCards.length - 1
+                        ? // Funzione diversa per l'ultimo elemento a destra
+                          handleCompare(
+                            initialCards[index]?.misfortune_index,
+                            100
+                          )
+                        : // Altrimenti la funzione normale
+                          handleCompare(
+                            initialCards[index]?.misfortune_index,
+                            initialCards[index + 1]?.misfortune_index
+                          )
                     }
                   />
                 </Col>
@@ -169,10 +193,8 @@ function NewGame() {
             ))}
           </Row>
         </Container>
-
         <h1>Time left: {timeLeft} seconds</h1>
         {timeLeft === 0 && <p>Time Expired!</p>}
-
         {roundResult !== null && (
           <>
             <Alert variant="info">
@@ -181,7 +203,7 @@ function NewGame() {
             <Button
               onClick={() => {
                 setRoundState(roundState + 1);
-                setTimeLeft(30);
+                setTimeLeft(30); // Reset del timer a 30 secondi
                 setRoundResult(null);
               }}
             >

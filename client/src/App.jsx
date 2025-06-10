@@ -7,6 +7,7 @@ import Homepage from "./components/Homepage";
 
 import API from "./API/API.mjs";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { useUser } from "./context/userContext.jsx";
 import NewGame from "./components/NewGame.jsx";
 

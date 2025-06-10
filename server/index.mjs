@@ -15,10 +15,11 @@ import {
   createGame,
   getGameByUser,
   createInitialCards,
-  listInitialCardsByGame,
+  getRoundById,
   createRound,
   listRoundsByGame,
   listRoundsWonByGame,
+  updateRound,
 } from "./dao.mjs";
 import dayjs from "dayjs";
 // init express
@@ -272,6 +273,49 @@ app.get("/api/rounds-won/:gameId", isLoggedIn, async (req, res) => {
     res.json(rounds);
   } catch {
     res.status(500).end();
+  }
+});
+
+app.patch("/api/rounds/:roundId", isLoggedIn, async (req, res) => {
+  const { misfortuneLeft, misfortuneRight, cardId, timeStamp } = req.body;
+  const roundId = req.params.roundId;
+  let won = false;
+  let result;
+  try {
+    result = await getCardById(cardId);
+  } catch {
+    res.status(404).json({ error: "Card not found" });
+  }
+
+  const misfortune_index = result.misfortune_index;
+
+  try {
+    result = await getRoundById(roundId);
+    console.log("Round found:", result);
+  } catch {
+    res.status(404).json({ error: "Error updating round" });
+  }
+
+  const oldTimeStamp = dayjs(result.timeStamp);
+  const newTimeStamp = dayjs(timeStamp);
+
+  const createdAt = newTimeStamp.diff(oldTimeStamp, "seconds");
+
+  if (misfortuneLeft < misfortune_index && misfortune_index < misfortuneRight) {
+    if (createdAt < 30) {
+      won = true;
+    }
+  }
+
+  try {
+    result = await updateRound(roundId, won);
+    const Result = {
+      misfortune_index,
+      won,
+    };
+    res.status(200).json(Result);
+  } catch {
+    res.status(503).json({ error: "Error updating round" });
   }
 });
 

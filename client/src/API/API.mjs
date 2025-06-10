@@ -97,6 +97,48 @@ const startGame = async () => {
   }
 };
 
+const postRound = async (roundData) => {
+  console.log("Posting round data:", roundData);
+  const response = await fetch(`${SERVER_URL}/api/rounds/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(roundData),
+  });
+
+  if (response.ok) {
+    const result = await response.json();
+    return result;
+  } else {
+    const errorDetails = await response.text();
+    throw new Error(`Failed to post round: ${errorDetails}`);
+  }
+};
+
+const compareCards = async (compareData) => {
+  const response = await fetch(
+    `${SERVER_URL}/api/rounds/${compareData.roundId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(compareData),
+    }
+  );
+
+  if (response.ok) {
+    const result = await response.json();
+    return result;
+  } else {
+    const errorDetails = await response.text();
+    throw new Error(`Failed to compare cards: ${errorDetails}`);
+  }
+};
+
 const API = {
   logIn,
   getUserInfo,
@@ -104,6 +146,8 @@ const API = {
   createGame,
   getAllCards,
   startGame,
+  postRound,
+  compareCards,
 };
 
 export default API;

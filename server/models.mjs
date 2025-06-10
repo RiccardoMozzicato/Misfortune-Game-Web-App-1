@@ -23,12 +23,13 @@ function initialCards(id, gameId, cardId) {
   this.cardId = cardId;
 }
 
-function Round(id, gameId, cardId, won, roundNumber) {
+function Round(id, gameId, cardId, won, roundNumber, timeStamp) {
   this.id = id;
   this.gameId = gameId;
   this.cardId = cardId;
   this.won = won;
   this.roundNumber = roundNumber;
+  this.timeStamp = timeStamp;
 }
 
 function User(id, username, password) {

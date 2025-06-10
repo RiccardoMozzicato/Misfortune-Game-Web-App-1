@@ -239,10 +239,16 @@ export const getInitialCardsByGame = (gameId) => {
 export const createRound = (round) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "INSERT INTO Round(gameId, cardId, won, roundNumber) VALUES (?, ?, ?, ?)";
+      "INSERT INTO Round(gameId, cardId, won, roundNumber, timeStamp) VALUES (?, ?, ?, ?,?)";
     db.run(
       sql,
-      [round.gameId, round.cardId, round.won, round.roundNumber],
+      [
+        round.gameId,
+        round.cardId,
+        round.won,
+        round.roundNumber,
+        round.timeStamp,
+      ],
       function (err) {
         if (err) reject(err);
         else resolve(this.lastID);
@@ -280,6 +286,38 @@ export const listRoundsWonByGame = (gameId) => {
               )
           )
         );
+    });
+  });
+};
+
+export const getRoundById = (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM Round WHERE id = ?";
+    db.get(sql, [id], (err, row) => {
+      if (err) reject(err);
+      else
+        resolve(
+          row
+            ? new Round(
+                row.id,
+                row.gameId,
+                row.cardId,
+                row.won,
+                row.roundNumber,
+                row.timeStamp
+              )
+            : undefined
+        );
+    });
+  });
+};
+
+export const updateRound = (roundId, won) => {
+  return new Promise((resolve, reject) => {
+    const sql = "UPDATE Round SET won = ? WHERE id = ?";
+    db.run(sql, [won, roundId], function (err) {
+      if (err) reject(err);
+      else resolve(this.changes > 0);
     });
   });
 };

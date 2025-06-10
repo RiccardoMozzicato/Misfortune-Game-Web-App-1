@@ -17,6 +17,7 @@ function NewGame() {
   const [currentCard, setCurrentCard] = useState(null); // Carta in gioco nel round attuale
 
   const [roundState, setRoundState] = useState(0); // Round della partita in frontend
+  const [roundLost, setRoundLost] = useState(0); // Counter round persi
 
   const [gameId, setGameId] = useState(null); // ID della partita corrente nel DB
   const [roundId, setRoundId] = useState(null); // ID del round corrente nel DB
@@ -26,6 +27,7 @@ function NewGame() {
   const [error, setError] = useState("");
 
   const [roundResult, setRoundResult] = useState(null); // Risultato del round corrente
+  const [gameFinished, setGameFinished] = useState(false); // Stato della partita, se è finita o meno
 
   const startGame = async () => {
     let result;
@@ -93,8 +95,6 @@ function NewGame() {
       setError("Errore nel postare il round.");
       return;
     }
-
-    console.log("Initial Cards:", initialCards);
   };
 
   const handleCompare = async (misfortuneLeft = 0, misfortuneRight = 100) => {
@@ -125,6 +125,14 @@ function NewGame() {
       );
       setInitialCards(sortedInitialCards);
       setGameCards(initialCards);
+    } else {
+      let countRoundLost = roundLost + 1;
+      setRoundLost(countRoundLost);
+
+      console.log("Round lost: " + countRoundLost);
+      if (countRoundLost >= 3) {
+        setGameFinished(true);
+      }
     }
 
     setRoundResult(result.won);
@@ -137,6 +145,7 @@ function NewGame() {
         significa che la partita è vinta*/}
 
         {gameCards.length === 6 && roundState <= 5 && <h1> Partita Vinta! </h1>}
+        {gameFinished && <h1> Partita Persa! </h1>}
 
         <h1>
           {timeLeft > 28 && roundState == 1
@@ -200,15 +209,19 @@ function NewGame() {
             <Alert variant="info">
               Round {roundState} - {roundResult ? "Vinto!" : "Perso!"}
             </Alert>
-            <Button
-              onClick={() => {
-                setRoundState(roundState + 1);
-                setTimeLeft(30); // Reset del timer a 30 secondi
-                setRoundResult(null);
-              }}
-            >
-              Next Round
-            </Button>
+            {gameFinished ? (
+              <Button>Termina partita</Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  setRoundState(roundState + 1);
+                  setTimeLeft(30); // Reset del timer a 30 secondi
+                  setRoundResult(null);
+                }}
+              >
+                Next Round
+              </Button>
+            )}
           </>
         )}
       </>

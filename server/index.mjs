@@ -20,6 +20,7 @@ import {
   listRoundsByGame,
   listRoundsWonByGame,
   updateRound,
+  updateGame,
 } from "./dao.mjs";
 import dayjs from "dayjs";
 // init express
@@ -233,6 +234,26 @@ app.get("/api/start-game", isLoggedIn, async (req, res) => {
     return;
   }
 });
+
+app.patch(
+  "/api/games/:gameId",
+  isLoggedIn,
+  [check("gameId").isNumeric(), check("totalCards").isNumeric()],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    try {
+      const id = req.params.gameId;
+      const { totalCards, outcome } = req.body;
+      await updateGame(id, totalCards, outcome);
+      res.status(200).end();
+    } catch (e) {
+      res.status(503).json({ error: "Impossible to update the game." });
+    }
+  }
+);
 
 // ROUND ROUTES
 app.post(

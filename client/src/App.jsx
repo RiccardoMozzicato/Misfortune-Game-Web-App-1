@@ -20,7 +20,6 @@ function App() {
     const allGames = async () => {
       const games = await API.getGames(user.username);
       setGames(games);
-      console.log(games);
     };
     allGames();
   }, [user.username]);

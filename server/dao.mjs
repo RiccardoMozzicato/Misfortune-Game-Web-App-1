@@ -164,6 +164,15 @@ export const getGameByUser = (username) => {
   });
 };
 
+export const updateGame = (id, totalCards, outcome) => {
+  return new Promise((resolve, reject) => {
+    const sql = "UPDATE Game SET totalCards = ?, outcome = ? WHERE id = ?";
+    db.run(sql, [totalCards, outcome, id], function (err) {
+      if (err) reject(err);
+      else resolve(this.changes > 0);
+    });
+  });
+};
 /** INITIAL CARDS DAO **/
 
 export const createInitialCards = (gameId, cardIds) => {

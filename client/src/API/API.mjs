@@ -97,6 +97,17 @@ const startGame = async () => {
   }
 };
 
+const updateGame = async (gameData) => {
+  const response = await fetch(`${SERVER_URL}/api/games/${gameData.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(gameData),
+  });
+};
+
 const postRound = async (roundData) => {
   console.log("Posting round data:", roundData);
   const response = await fetch(`${SERVER_URL}/api/rounds/`, {
@@ -148,6 +159,7 @@ const API = {
   startGame,
   postRound,
   compareCards,
+  updateGame,
 };
 
 export default API;

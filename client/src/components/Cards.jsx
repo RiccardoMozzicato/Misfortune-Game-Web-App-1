@@ -23,7 +23,7 @@ function Cards(props) {
                   // Se disable è passato come prop, disabilito il bottone
                   disabled={props.disable != null ? true : false}
                 >
-                  <i class="bi bi-arrow-left fs-3"></i>
+                  <i className="bi bi-arrow-left fs-3"></i>
                 </Button>
               </Col>
               <Col>
@@ -32,7 +32,7 @@ function Cards(props) {
                   onClick={props.next}
                   disabled={props.disable != null ? true : false}
                 >
-                  <i class="bi bi-arrow-right fs-3"></i>
+                  <i className="bi bi-arrow-right fs-3"></i>
                 </Button>
               </Col>
             </Row>

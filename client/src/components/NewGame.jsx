@@ -1,15 +1,19 @@
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import { useState } from "react";
 import dayjs from "dayjs";
 import { Button, Card, Container, Row, Col, Alert } from "react-bootstrap";
 import { useUser } from "../context/userContext.jsx";
 import Cards from "./Cards.jsx";
 import API from "../API/API.mjs";
+import Timer from "./Timer.jsx";
+import CardList from "./CardList.jsx";
+import RoundState from "./RoundState.jsx";
 
 function NewGame() {
   const { user, loggedIn } = useUser();
 
   const [gameStarted, setGameStarted] = useState(false); // Stato per verificare se la partita è iniziata
+  const [gameFinished, setGameFinished] = useState(null); // Stato della partita, se è finita o meno
 
   const [gameCards, setGameCards] = useState([]);
   const [roundCards, setRoundCards] = useState([]);
@@ -22,12 +26,11 @@ function NewGame() {
   const [gameId, setGameId] = useState(null); // ID della partita corrente nel DB
   const [roundId, setRoundId] = useState(null); // ID del round corrente nel DB
 
-  const [timeLeft, setTimeLeft] = useState(30);
+  //const [timeLeft, setTimeLeft] = useState(30);
   const [timerState, setTimerState] = useState(false); // Stato del timer, se è in esecuzione o meno
   const [error, setError] = useState("");
 
   const [roundResult, setRoundResult] = useState(null); // Risultato del round corrente
-  const [gameFinished, setGameFinished] = useState(false); // Stato della partita, se è finita o meno
 
   const startGame = async () => {
     let result;
@@ -61,19 +64,8 @@ function NewGame() {
     setCurrentCard(card);
 
     postRound(card);
+    setTimerState(true); // Ferma il timer all'inizio del round
   };
-
-  useEffect(() => {
-    if (!gameStarted || !timerState) return;
-
-    if (timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => prevTime - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [gameStarted, timeLeft, timerState]);
 
   const postRound = async (currentCard) => {
     let result;
@@ -113,7 +105,6 @@ function NewGame() {
       return;
     }
 
-    setTimerState(false);
     if (result.won) {
       let cardCurrent = {
         ...currentCard,
@@ -125,33 +116,50 @@ function NewGame() {
       );
       setInitialCards(sortedInitialCards);
       setGameCards(initialCards);
+      if (gameCards.length === 6 && roundState <= 5) {
+        setGameFinished(true);
+      }
     } else {
       let countRoundLost = roundLost + 1;
       setRoundLost(countRoundLost);
 
-      console.log("Round lost: " + countRoundLost);
       if (countRoundLost >= 3) {
-        setGameFinished(true);
+        setGameFinished(false);
       }
     }
 
     setRoundResult(result.won);
+    setTimerState(false);
   };
+
+  useEffect(() => {
+    if (gameFinished !== null) {
+      let result;
+      try {
+        const gameData = {
+          id: gameId,
+          totalCards: gameCards.length,
+          outcome: gameFinished,
+        };
+        result = API.updateGame(gameData);
+      } catch (err) {
+        setError("Errore durante il caricamento della partita.");
+      }
+    }
+  }, [gameFinished]);
 
   if (gameStarted) {
     return (
       <>
         {/* Se il numero di carte è 6 e lo stato del round è minore o uguale a 5,
         significa che la partita è vinta*/}
-
-        {gameCards.length === 6 && roundState <= 5 && <h1> Partita Vinta! </h1>}
-        {gameFinished && <h1> Partita Persa! </h1>}
-
-        <h1>
+        {gameFinished === true && <h1> Partita Vinta! </h1>}
+        {gameFinished === false && <h1> Partita Persa! </h1>}
+        {/*  <h1>
           {timeLeft > 28 && roundState == 1
             ? "Partita iniziata"
             : "Round: " + roundState}
-        </h1>
+        </h1> */}
         <Container>
           <Row>
             {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}
@@ -165,65 +173,28 @@ function NewGame() {
             )}
           </Row>
         </Container>
-        <p>Your cards:</p>
-        <Container fluid>
-          <Row>
-            {initialCards.map((card, index) => (
-              <>
-                <Col xl="2">
-                  <Cards
-                    cards={card}
-                    // Se roundResult è diverso da null, significa che il round è finito e non posso più confrontare le carte
-                    disable={roundResult}
-                    key={index}
-                    // Passo al componente Cards le funzioni handleCompare, con paramentri differenti
-                    prev={() =>
-                      handleCompare(
-                        initialCards[index - 1]?.misfortune_index,
-                        initialCards[index]?.misfortune_index
-                      )
-                    }
-                    next={() =>
-                      index === initialCards.length - 1
-                        ? // Funzione diversa per l'ultimo elemento a destra
-                          handleCompare(
-                            initialCards[index]?.misfortune_index,
-                            100
-                          )
-                        : // Altrimenti la funzione normale
-                          handleCompare(
-                            initialCards[index]?.misfortune_index,
-                            initialCards[index + 1]?.misfortune_index
-                          )
-                    }
-                  />
-                </Col>
-              </>
-            ))}
-          </Row>
-        </Container>
-        <h1>Time left: {timeLeft} seconds</h1>
-        {timeLeft === 0 && <p>Time Expired!</p>}
-        {roundResult !== null && (
-          <>
-            <Alert variant="info">
-              Round {roundState} - {roundResult ? "Vinto!" : "Perso!"}
-            </Alert>
-            {gameFinished ? (
-              <Button>Termina partita</Button>
-            ) : (
-              <Button
-                onClick={() => {
-                  setRoundState(roundState + 1);
-                  setTimeLeft(30); // Reset del timer a 30 secondi
-                  setRoundResult(null);
-                }}
-              >
-                Next Round
-              </Button>
-            )}
-          </>
-        )}
+        <CardList
+          initialCards={initialCards}
+          roundResult={roundResult}
+          handleCompare={handleCompare}
+        />
+        <Timer
+          initialTime={5}
+          timerState={timerState}
+          onTimeUp={() => {
+            setTimerState(false); // Ferma il timer
+            setRoundResult(false);
+          }}
+        />
+
+        <RoundState
+          roundState={roundState}
+          roundResult={roundResult}
+          gameFinished={gameFinished}
+          setRoundState={setRoundState}
+          //setTimeLeft={setTimeLeft}
+          setRoundResult={setRoundResult}
+        />
       </>
     );
   }

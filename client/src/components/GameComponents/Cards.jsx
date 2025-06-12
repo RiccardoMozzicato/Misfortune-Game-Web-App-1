@@ -17,23 +17,27 @@ function Cards(props) {
           {!props.roundCard ? (
             <Row lg="2" className="mt-2">
               <Col>
-                <Button
-                  variant="secondary"
-                  onClick={props.prev}
-                  // Se disable è passato come prop, disabilito il bottone
-                  disabled={props.disable != null ? true : false}
-                >
-                  <i className="bi bi-arrow-left fs-3"></i>
-                </Button>
+                {!props.recap ? (
+                  <Button
+                    variant="secondary"
+                    onClick={props.prev}
+                    // Se disable è passato come prop, disabilito il bottone
+                    disabled={props.disable != null ? true : false}
+                  >
+                    <i className="bi bi-arrow-left fs-3"></i>
+                  </Button>
+                ) : null}
               </Col>
               <Col>
-                <Button
-                  variant="secondary"
-                  onClick={props.next}
-                  disabled={props.disable != null ? true : false}
-                >
-                  <i className="bi bi-arrow-right fs-3"></i>
-                </Button>
+                {!props.recap ? (
+                  <Button
+                    variant="secondary"
+                    onClick={props.next}
+                    disabled={props.disable != null ? true : false}
+                  >
+                    <i className="bi bi-arrow-right fs-3"></i>
+                  </Button>
+                ) : null}
               </Col>
             </Row>
           ) : null}

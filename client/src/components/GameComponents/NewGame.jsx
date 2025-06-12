@@ -2,15 +2,19 @@ import React, { use, useEffect } from "react";
 import { useState } from "react";
 import dayjs from "dayjs";
 import { Button, Card, Container, Row, Col, Alert } from "react-bootstrap";
-import { useUser } from "../context/userContext.jsx";
+import { useUser } from "../../context/userContext.jsx";
 import Cards from "./Cards.jsx";
-import API from "../API/API.mjs";
+import API from "../../API/API.mjs";
 import Timer from "./Timer.jsx";
 import CardList from "./CardList.jsx";
 import RoundState from "./RoundState.jsx";
+import { Outlet } from "react-router";
+import { useLocation } from "react-router";
+import Recap from "./Recap.jsx";
 
 function NewGame() {
   const { user, loggedIn } = useUser();
+  const location = useLocation();
 
   const [gameStarted, setGameStarted] = useState(false); // Stato per verificare se la partita è iniziata
   const [gameFinished, setGameFinished] = useState(null); // Stato della partita, se è finita o meno
@@ -31,6 +35,25 @@ function NewGame() {
   const [error, setError] = useState("");
 
   const [roundResult, setRoundResult] = useState(null); // Risultato del round corrente
+
+  // Reset dello stato del gioco quando si naviga verso /new-game da qualsiasi altra pagina
+  useEffect(() => {
+    if (location.pathname === "/new-game") {
+      setGameStarted(false);
+      setGameFinished(null);
+      setGameCards([]);
+      setRoundCards([]);
+      setInitialCards([]);
+      setCurrentCard(null);
+      setRoundState(0);
+      setRoundLost(0);
+      setGameId(null);
+      setRoundId(null);
+      setTimerState(false);
+      setError("");
+      setRoundResult(null);
+    }
+  }, [location.pathname]);
 
   const startGame = async () => {
     let result;
@@ -147,6 +170,16 @@ function NewGame() {
       }
     }
   }, [gameFinished]);
+
+  if (location.pathname === "/new-game/recap") {
+    return (
+      <Recap
+        gameFinished={gameFinished}
+        roundLost={roundLost}
+        gameCards={gameCards}
+      />
+    ); // Renderizza solo Outlet se il percorso è /new-game/recap
+  }
 
   if (gameStarted) {
     return (

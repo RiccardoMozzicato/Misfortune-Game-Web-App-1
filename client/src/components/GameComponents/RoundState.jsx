@@ -18,7 +18,7 @@ function RoundState({
             Round {roundState} - {roundResult ? "Vinto!" : "Perso!"}
           </Alert>
           {gameFinished != null ? (
-            <Button as={Link} to="/">
+            <Button as={Link} to="/new-game/recap">
               Termina partita
             </Button>
           ) : (

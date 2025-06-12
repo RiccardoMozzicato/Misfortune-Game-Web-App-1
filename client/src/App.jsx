@@ -9,7 +9,8 @@ import API from "./API/API.mjs";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useUser } from "./context/userContext.jsx";
-import NewGame from "./components/NewGame.jsx";
+import NewGame from "./components/GameComponents/NewGame.jsx";
+import Recap from "./components/GameComponents/Recap.jsx";
 
 function App() {
   const [games, setGames] = useState([]);
@@ -41,7 +42,9 @@ function App() {
           element={loggedIn ? <Navigate replace to="/" /> : <LoginForm />}
         />
         <Route path="/" element={<Homepage games={games} />} />
-        <Route path="/new-game" element={<NewGame />} />
+        <Route path="/new-game" element={<NewGame />}>
+          <Route path="recap" element={<Recap />} />
+        </Route>
       </Route>
     </Routes>
   );

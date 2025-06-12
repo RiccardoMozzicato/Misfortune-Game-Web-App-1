@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import Cards from "./Cards.jsx";
 
-function CardList({ initialCards, roundResult, handleCompare }) {
+function CardList({ initialCards, roundResult, handleCompare, recap }) {
   return (
     <div>
       <p>Your cards:</p>
@@ -11,6 +11,7 @@ function CardList({ initialCards, roundResult, handleCompare }) {
           {initialCards.map((card, index) => (
             <Col xl="2" key={index}>
               <Cards
+                recap={recap}
                 cards={card}
                 disable={roundResult}
                 prev={() =>

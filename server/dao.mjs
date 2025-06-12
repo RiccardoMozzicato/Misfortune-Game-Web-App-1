@@ -139,7 +139,7 @@ export const createGame = (game) => {
 export const getGameByUser = (username) => {
   return new Promise((resolve, reject) => {
     const sql = `
-      Select * FROM Game g
+      Select g.* FROM Game g
       JOIN User u ON g.userId = u.id
       WHERE u.username = ?
     `;

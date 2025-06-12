@@ -11,19 +11,11 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useUser } from "./context/userContext.jsx";
 import NewGame from "./components/GameComponents/NewGame.jsx";
 import Recap from "./components/GameComponents/Recap.jsx";
+import MatchHistory from "./components/MatchHistoryComponents/MatchHistory.jsx";
 
 function App() {
   const [games, setGames] = useState([]);
   const { loggedIn, setLoggedIn, user, setUser } = useUser();
-
-  useEffect(() => {
-    if (loggedIn == false) return;
-    const allGames = async () => {
-      const games = await API.getGames(user.username);
-      setGames(games);
-    };
-    allGames();
-  }, [user.username]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -45,6 +37,7 @@ function App() {
         <Route path="/new-game" element={<NewGame />}>
           <Route path="recap" element={<Recap />} />
         </Route>
+        <Route path="/match-history" element={<MatchHistory />} />
       </Route>
     </Routes>
   );

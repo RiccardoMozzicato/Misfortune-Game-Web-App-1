@@ -166,10 +166,11 @@ app.post(
   }
 );
 
+// getMatchHistory
 app.get("/api/games/:username", isLoggedIn, async (req, res) => {
-  console.log("Fetching games for user:", req.params.username);
   try {
     const games = await getGameByUser(req.params.username);
+    console.log("Games found:", games);
     res.json(games);
   } catch {
     res.status(500).end();

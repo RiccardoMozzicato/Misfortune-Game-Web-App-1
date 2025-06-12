@@ -34,7 +34,7 @@ const getUserInfo = async () => {
   }
 };
 
-const getGames = async (username) => {
+const getMatchHistory = async (username) => {
   const response = await fetch(`${SERVER_URL}/api/games/${username}`, {
     method: "GET",
     credentials: "include",
@@ -153,7 +153,7 @@ const compareCards = async (compareData) => {
 const API = {
   logIn,
   getUserInfo,
-  getGames,
+  getMatchHistory,
   createGame,
   getAllCards,
   startGame,

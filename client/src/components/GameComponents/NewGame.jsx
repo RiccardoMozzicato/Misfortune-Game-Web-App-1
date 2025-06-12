@@ -11,6 +11,7 @@ import RoundState from "./RoundState.jsx";
 import { Outlet } from "react-router";
 import { useLocation } from "react-router";
 import Recap from "./Recap.jsx";
+import NewDemoGame from "./NewGame.jsx";
 
 function NewGame() {
   const { user, loggedIn } = useUser();
@@ -212,7 +213,7 @@ function NewGame() {
           handleCompare={handleCompare}
         />
         <Timer
-          initialTime={5}
+          initialTime={30}
           timerState={timerState}
           onTimeUp={() => {
             setTimerState(false); // Ferma il timer

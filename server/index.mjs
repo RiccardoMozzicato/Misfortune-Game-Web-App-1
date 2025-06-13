@@ -148,6 +148,8 @@ app.post(
 );
 
 // GAME ROUTES
+
+// CREATE A NEW GAME
 app.post(
   "/api/games/",
   //isLoggedIn,

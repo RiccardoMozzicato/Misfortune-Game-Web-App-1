@@ -87,7 +87,15 @@ function NewGame() {
     setRoundCards(roundCardscopy);
     setCurrentCard(card);
 
-    postRound(card);
+    // Se user è null, significa che non è loggato, quindi non possiamo procedere
+    if (loggedIn) {
+      postRound(card);
+    } else {
+      if (roundState <= 1) {
+        postRound(card);
+      }
+    }
+
     setTimerState(true); // Ferma il timer all'inizio del round
   };
 
@@ -140,6 +148,7 @@ function NewGame() {
       );
       setInitialCards(sortedInitialCards);
       setGameCards(initialCards);
+
       if (gameCards.length === 6 && roundState <= 5) {
         setGameFinished(true);
       }
@@ -149,6 +158,17 @@ function NewGame() {
 
       if (countRoundLost >= 3) {
         setGameFinished(false);
+      }
+    }
+
+    // Per utenti non loggati quindi DEMO
+    if (!loggedIn) {
+      if (roundState == 2) {
+        if (result.won) {
+          setGameFinished(true); // Se non è loggato, la partita finisce subito
+        } else {
+          setGameFinished(false); // Se non è loggato, la partita finisce subito
+        }
       }
     }
 

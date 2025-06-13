@@ -53,7 +53,7 @@ const createGame = async (userId) => {
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
+    //credentials: "include",
     body: JSON.stringify({
       createdAt: dayjs().toISOString(),
       userId,

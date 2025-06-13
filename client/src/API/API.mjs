@@ -150,6 +150,20 @@ const compareCards = async (compareData) => {
   }
 };
 
+const deleteGame = async (gameId) => {
+  const response = await fetch(`${SERVER_URL}/api/games/${gameId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    return true;
+  } else {
+    const errorDetails = await response.text();
+    throw new Error(`Failed to delete game: ${errorDetails}`);
+  }
+};
+
 const API = {
   logIn,
   getUserInfo,
@@ -160,6 +174,7 @@ const API = {
   postRound,
   compareCards,
   updateGame,
+  deleteGame,
 };
 
 export default API;

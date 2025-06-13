@@ -21,6 +21,7 @@ import {
   listRoundsWonByGame,
   updateRound,
   updateGame,
+  deleteGame,
 } from "./dao.mjs";
 import dayjs from "dayjs";
 // init express
@@ -31,6 +32,7 @@ const port = 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+app.use("/images", express.static("public/images"));
 
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -168,6 +170,76 @@ app.post(
   }
 );
 
+// GAMES ROUTS
+app.get("/api/start-game", async (req, res) => {
+  try {
+    const gameId = await createGame({
+      createdAt: new dayjs().toISOString(),
+      userId: req.user?.id || 0, // Assuming a user ID of 1 for testing purposes
+    });
+
+    const allCards = await listCards();
+    const shuffled = allCards.sort(() => Math.random() - 0.5);
+
+    const initialCards = shuffled.slice(0, 3);
+
+    await createInitialCards(
+      gameId,
+      initialCards.map((card) => card.id)
+    );
+
+    const allCardsWithoutInitial = allCards.filter(
+      (card) => !initialCards.includes(card)
+    );
+
+    const roundCards = allCardsWithoutInitial.slice(0, 5);
+
+    res.status(201).json({
+      gameId,
+      initialCards,
+      roundCards: roundCards.map((card) => ({
+        id: card.id,
+        name: card.name,
+        url: card.url,
+        theme: card.theme,
+      })),
+    });
+  } catch (e) {
+    res.status(503).json({ error: "Impossible to start the game." });
+    return;
+  }
+});
+
+app.patch(
+  "/api/games/:gameId",
+  //isLoggedIn,
+  [check("gameId").isNumeric(), check("totalCards").isNumeric()],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    try {
+      const id = req.params.gameId;
+      const { totalCards, outcome } = req.body;
+      await updateGame(id, totalCards, outcome);
+      res.status(200).end();
+    } catch (e) {
+      res.status(503).json({ error: "Impossible to update the game." });
+    }
+  }
+);
+
+app.delete("/api/games/:gameId", async (req, res) => {
+  try {
+    const id = req.params.gameId;
+    await deleteGame(id);
+    res.status(204).end();
+  } catch (e) {
+    res.status(503).json({ error: "Impossible to delete the game." });
+  }
+});
+
 // getMatchHistory
 app.get("/api/games/:username", isLoggedIn, async (req, res) => {
   try {
@@ -198,70 +270,10 @@ app.post(
   }
 );
 
-app.get("/api/start-game", isLoggedIn, async (req, res) => {
-  try {
-    const gameId = await createGame({
-      createdAt: new dayjs().toISOString(),
-      userId: req.user.id, // Assuming a user ID of 1 for testing purposes
-    });
-
-    const allCards = await listCards();
-    const shuffled = allCards.sort(() => Math.random() - 0.5);
-
-    const initialCards = shuffled.slice(0, 3);
-
-    await createInitialCards(
-      gameId,
-      initialCards.map((card) => card.id)
-    );
-
-    const allCardsWithoutInitial = allCards.filter(
-      (card) => !initialCards.includes(card)
-    );
-
-    const roundCards = allCardsWithoutInitial.slice(0, 5);
-
-    res.status(201).json({
-      gameId,
-      initialCards,
-      roundCards: roundCards.map((card) => ({
-        id: card.id,
-        name: card.name,
-        url: card.url,
-        theme: card.theme,
-      })),
-    });
-  } catch (e) {
-    console.error("Error starting game:", e);
-    res.status(503).json({ error: "Impossible to start the game." });
-    return;
-  }
-});
-
-app.patch(
-  "/api/games/:gameId",
-  isLoggedIn,
-  [check("gameId").isNumeric(), check("totalCards").isNumeric()],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-    try {
-      const id = req.params.gameId;
-      const { totalCards, outcome } = req.body;
-      await updateGame(id, totalCards, outcome);
-      res.status(200).end();
-    } catch (e) {
-      res.status(503).json({ error: "Impossible to update the game." });
-    }
-  }
-);
-
 // ROUND ROUTES
 app.post(
   "/api/rounds/",
-  isLoggedIn,
+  //isLoggedIn,
   [
     check("gameId").isNumeric(),
     check("cardId").isNumeric(),
@@ -300,48 +312,55 @@ app.get("/api/rounds-won/:gameId", isLoggedIn, async (req, res) => {
   }
 });
 
-app.patch("/api/rounds/:roundId", isLoggedIn, async (req, res) => {
-  const { misfortuneLeft, misfortuneRight, cardId, timeStamp } = req.body;
-  const roundId = req.params.roundId;
-  let won = false;
-  let result;
-  try {
-    result = await getCardById(cardId);
-  } catch {
-    res.status(404).json({ error: "Card not found" });
-  }
+app.patch(
+  "/api/rounds/:roundId",
+  //isLoggedIn,
+  async (req, res) => {
+    const { misfortuneLeft, misfortuneRight, cardId, timeStamp } = req.body;
+    const roundId = req.params.roundId;
+    let won = false;
+    let result;
+    try {
+      result = await getCardById(cardId);
+    } catch {
+      res.status(404).json({ error: "Card not found" });
+    }
 
-  const misfortune_index = result.misfortune_index;
+    const misfortune_index = result.misfortune_index;
 
-  try {
-    result = await getRoundById(roundId);
-    console.log("Round found:", result);
-  } catch {
-    res.status(404).json({ error: "Error updating round" });
-  }
+    try {
+      result = await getRoundById(roundId);
+      console.log("Round found:", result);
+    } catch {
+      res.status(404).json({ error: "Error updating round" });
+    }
 
-  const oldTimeStamp = dayjs(result.timeStamp);
-  const newTimeStamp = dayjs(timeStamp);
+    const oldTimeStamp = dayjs(result.timeStamp);
+    const newTimeStamp = dayjs(timeStamp);
 
-  const createdAt = newTimeStamp.diff(oldTimeStamp, "seconds");
+    const createdAt = newTimeStamp.diff(oldTimeStamp, "seconds");
 
-  if (misfortuneLeft < misfortune_index && misfortune_index < misfortuneRight) {
-    if (createdAt < 30) {
-      won = true;
+    if (
+      misfortuneLeft < misfortune_index &&
+      misfortune_index < misfortuneRight
+    ) {
+      if (createdAt < 30) {
+        won = true;
+      }
+    }
+
+    try {
+      result = await updateRound(roundId, won);
+      const Result = {
+        misfortune_index,
+        won,
+      };
+      res.status(200).json(Result);
+    } catch {
+      res.status(503).json({ error: "Error updating round" });
     }
   }
-
-  try {
-    result = await updateRound(roundId, won);
-    const Result = {
-      misfortune_index,
-      won,
-    };
-    res.status(200).json(Result);
-  } catch {
-    res.status(503).json({ error: "Error updating round" });
-  }
-});
+);
 
 // AUTH ROUTES
 app.post("/api/sessions", (req, res, next) => {

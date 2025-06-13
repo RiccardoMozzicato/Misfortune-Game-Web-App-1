@@ -163,7 +163,7 @@ function NewGame() {
 
     // Per utenti non loggati quindi DEMO
     if (!loggedIn) {
-      if (roundState == 2) {
+      if (roundState == 1) {
         if (result.won) {
           setGameFinished(true); // Se non è loggato, la partita finisce subito
         } else {
@@ -195,6 +195,7 @@ function NewGame() {
   if (location.pathname === "/new-game/recap") {
     return (
       <Recap
+        gameId={gameId}
         gameFinished={gameFinished}
         roundLost={roundLost}
         gameCards={gameCards}
@@ -209,11 +210,7 @@ function NewGame() {
         significa che la partita è vinta*/}
         {gameFinished === true && <h1> Partita Vinta! </h1>}
         {gameFinished === false && <h1> Partita Persa! </h1>}
-        {/*  <h1>
-          {timeLeft > 28 && roundState == 1
-            ? "Partita iniziata"
-            : "Round: " + roundState}
-        </h1> */}
+
         <Container>
           <Row>
             {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}

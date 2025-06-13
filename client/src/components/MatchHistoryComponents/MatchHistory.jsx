@@ -18,7 +18,6 @@ function MatchHistory() {
     const fetchMatchHistory = async () => {
       if (!user || !user.username) {
         setLoading(false);
-        console.warn("Utente non definito o username mancante");
         return; // Esci dal useEffect se user è undefined
       }
 

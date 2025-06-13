@@ -62,11 +62,12 @@ export const getUserByUsername = (username, password) => {
 
 export const createCard = (card) => {
   return new Promise((resolve, reject) => {
+    const url = `/images/cards/${card.url}`;
     const sql =
       "INSERT INTO Card(name, url, misfortune_index, theme) VALUES (?, ?, ?, ?)";
     db.run(
       sql,
-      [card.name, card.url, card.misfortune_index, card.theme],
+      [card.name, url, card.misfortune_index, card.theme],
       function (err) {
         if (err) reject(err);
         else resolve(this.lastID);
@@ -173,6 +174,17 @@ export const updateGame = (id, totalCards, outcome) => {
     });
   });
 };
+
+export const deleteGame = (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = "DELETE FROM Game WHERE id = ?";
+    db.run(sql, [id], function (err) {
+      if (err) reject(err);
+      else resolve(this.changes > 0);
+    });
+  });
+};
+
 /** INITIAL CARDS DAO **/
 
 export const createInitialCards = (gameId, cardIds) => {

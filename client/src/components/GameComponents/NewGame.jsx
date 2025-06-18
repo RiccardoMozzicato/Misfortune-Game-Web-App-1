@@ -213,15 +213,17 @@ function NewGame() {
 
         <Container>
           <Row>
-            {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}
-            Round Card:
-            {currentCard && (
-              <Cards
-                cards={currentCard}
-                // Passo roundCard == true per indicare che questa è la carta del round corrente
-                roundCard={true}
-              />
-            )}
+            <Col lg={{ span: 2, offset: 5 }} padding="0">
+              {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}
+              Round Card:
+              {currentCard && (
+                <Cards
+                  cards={currentCard}
+                  // Passo roundCard == true per indicare che questa è la carta del round corrente
+                  roundCard={true}
+                />
+              )}
+            </Col>
           </Row>
         </Container>
         <CardList

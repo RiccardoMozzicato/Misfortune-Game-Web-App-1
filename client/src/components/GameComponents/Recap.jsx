@@ -14,7 +14,6 @@ function Recap({ gameFinished, roundLost, gameCards, gameId }) {
     try {
       API.deleteGame(gameId); // Elimina la partita corrente dal DB
     } catch (error) {
-      console.error("Errore durante l'eliminazione della partita:", error);
       alert("Errore durante l'eliminazione della partita. Riprova più tardi.");
     }
     navigate("/new-game"); // Naviga verso la nuova partita

@@ -7,21 +7,26 @@ import { useUser } from "../../context/userContext.jsx";
 
 function MatchHistory() {
   const { user } = useUser(); // Ottieni le informazioni dell'utente dal contesto
+  console.log(user);
 
   const [matchHistory, setMatchHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log("useEffect MatchHistory");
     let isMounted = true;
     // Qui puoi aggiungere la logica per recuperare la storia delle partite
     const fetchMatchHistory = async () => {
+      console.log("useEffect MatchHistory");
       if (!user || !user.username) {
+        console.log(user);
         setLoading(false);
         return; // Esci dal useEffect se user è undefined
       }
 
       setLoading(true);
+      setError("");
       try {
         const response = await API.getMatchHistory(user.username);
         if (isMounted) {

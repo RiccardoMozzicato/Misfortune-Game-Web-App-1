@@ -6,7 +6,7 @@ function Cards(props) {
     <>
       {/* Se roundCard è true, non mostro il bordo della carta */}
       <Card {...(!props.roundCard ? { border: "primary" } : {})}>
-        <Card.Img variant="top" src={props.cards.url} />
+        <Card.Img className="img-fluid" variant="top" src={props.cards.url} />
         <Card.Body>
           <Card.Subtitle>{props.cards.name}</Card.Subtitle>
           <Card.Subtitle className="mt-2">

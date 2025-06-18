@@ -24,6 +24,7 @@ import {
   deleteGame,
 } from "./dao.mjs";
 import dayjs from "dayjs";
+import path from "path";
 // init express
 const app = express();
 const port = 3001;
@@ -32,6 +33,7 @@ const port = 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+
 app.use("/images", express.static("public/images"));
 
 const corsOptions = {
@@ -244,7 +246,6 @@ app.delete("/api/games/:gameId", async (req, res) => {
 app.get("/api/games/:username", isLoggedIn, async (req, res) => {
   try {
     const games = await getGameByUser(req.params.username);
-    console.log("Games found:", games);
     res.json(games);
   } catch {
     res.status(500).end();
@@ -330,7 +331,6 @@ app.patch(
 
     try {
       result = await getRoundById(roundId);
-      console.log("Round found:", result);
     } catch {
       res.status(404).json({ error: "Error updating round" });
     }
@@ -366,16 +366,13 @@ app.patch(
 app.post("/api/sessions", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) {
-      console.error("Authentication error:", err);
       return res.status(500).json({ error: "Internal server error" });
     }
     if (!user) {
-      console.warn("Authentication failed:", info);
       return res.status(401).json({ error: info.message || "Unauthorized" });
     }
     req.logIn(user, (err) => {
       if (err) {
-        console.error("Login error:", err);
         return res.status(500).json({ error: "Internal server error" });
       }
       return res.status(201).json(req.user);

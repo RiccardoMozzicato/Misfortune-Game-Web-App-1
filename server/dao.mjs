@@ -146,7 +146,6 @@ export const getGameByUser = (username) => {
     `;
     db.all(sql, [username], (err, rows) => {
       if (err) {
-        console.log(err);
         reject(err);
       } else
         resolve(

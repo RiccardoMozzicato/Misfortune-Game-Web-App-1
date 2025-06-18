@@ -90,7 +90,6 @@ const startGame = async () => {
 
   if (response.ok) {
     const cards = await response.json();
-    console.log("Cards received from startGame:", cards);
     return cards;
   } else {
     throw new Error("Failed to fetch game cards");
@@ -109,7 +108,6 @@ const updateGame = async (gameData) => {
 };
 
 const postRound = async (roundData) => {
-  console.log("Posting round data:", roundData);
   const response = await fetch(`${SERVER_URL}/api/rounds/`, {
     method: "POST",
     headers: {

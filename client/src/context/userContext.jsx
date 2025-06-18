@@ -9,12 +9,14 @@ export function UserProvider({ children }) {
 
   const handleLogin = async (credentials) => {
     try {
-      const user = await API.logIn(credentials);
+      const result = await API.logIn(credentials);
       setLoggedIn(true);
-      setMessage({ msg: `Welcome, ${user.username}!`, type: "success" });
-      setUser(user);
+      setUser(result);
+      return user;
     } catch (err) {
-      setMessage({ msg: err, type: "danger" });
+      throw new Error(
+        "Login failed. Please check your credentials and try again."
+      );
     }
   };
 

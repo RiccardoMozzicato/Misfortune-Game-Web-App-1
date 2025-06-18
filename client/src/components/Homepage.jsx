@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "react-router";
 import { Container, Col, Button } from "react-bootstrap";
+import { useUser } from "../context/userContext.jsx";
 
-function Homepage(props) {
+function Homepage() {
   return (
     <>
       <Container className="mt-5">

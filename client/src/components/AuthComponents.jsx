@@ -26,6 +26,7 @@ function LoginForm() {
 
   return (
     <>
+      {isPending && <p>Logging in...</p>}
       <Form action={formAction}>
         <Form.Group controlId="formUsername">
           <Form.Label>Username</Form.Label>

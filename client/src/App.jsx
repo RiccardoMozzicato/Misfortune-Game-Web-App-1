@@ -5,13 +5,16 @@ import DefaultLayout from "./components/DefaultLayout";
 import { LoginForm } from "./components/AuthComponents";
 import Homepage from "./components/Homepage";
 
+import NewGame from "./components/GameComponents/NewGame.jsx";
+import Recap from "./components/GameComponents/Recap.jsx";
+
+import MatchHistory from "./components/MatchHistoryComponents/MatchHistory.jsx";
+
+import { useUser } from "./context/userContext.jsx";
+
 import API from "./API/API.mjs";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useUser } from "./context/userContext.jsx";
-import NewGame from "./components/GameComponents/NewGame.jsx";
-import Recap from "./components/GameComponents/Recap.jsx";
-import MatchHistory from "./components/MatchHistoryComponents/MatchHistory.jsx";
 
 function App() {
   const [games, setGames] = useState([]);

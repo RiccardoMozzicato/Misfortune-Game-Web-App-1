@@ -6,7 +6,7 @@ function DefaultLayout() {
   return (
     <>
       <NavHeader />
-      <Container fluid="lg" style={{ marginTop: "5rem" }}>
+      <Container fluid="lg" style={{ marginTop: "2rem" }}>
         <Outlet />
       </Container>
     </>

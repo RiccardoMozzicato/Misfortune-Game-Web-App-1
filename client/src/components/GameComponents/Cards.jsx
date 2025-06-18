@@ -5,11 +5,31 @@ function Cards(props) {
   return (
     <>
       {/* Se roundCard è true, non mostro il bordo della carta */}
-      <Card {...(!props.roundCard ? { border: "primary" } : {})}>
-        <Card.Img className="img-fluid" variant="top" src={props.cards.url} />
-        <Card.Body>
-          <Card.Subtitle>{props.cards.name}</Card.Subtitle>
+      <Card
+        style={
+          props.roundCard
+            ? {
+                height: "300px",
+                padding: 0,
+              }
+            : {
+                height: "450px",
+                padding: 0,
+              }
+        }
+        {...(!props.roundCard ? { border: "primary" } : {})}
+      >
+        <Card.Img
+          style={{ height: "200px" }}
+          className="img-fluid"
+          variant="top"
+          src={props.cards.url}
+        />
+        <Card.Body style={{ paddingTop: "1rem" }}>
+          <Card.Subtitle className="cardName">{props.cards.name}</Card.Subtitle>
           <Card.Subtitle className="mt-2">
+            {props.roundCard ? null : <p className="red">Misfortune index: </p>}
+
             {props.cards.misfortune_index}
           </Card.Subtitle>
 

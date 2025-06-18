@@ -1,7 +1,15 @@
 import React, { use, useEffect } from "react";
 import { useState } from "react";
 import dayjs from "dayjs";
-import { Button, Card, Container, Row, Col, Alert } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Container,
+  Row,
+  Col,
+  Alert,
+  Stack,
+} from "react-bootstrap";
 import { useUser } from "../../context/userContext.jsx";
 import Cards from "./Cards.jsx";
 import API from "../../API/API.mjs";
@@ -213,7 +221,28 @@ function NewGame() {
 
         <Container>
           <Row>
-            <Col lg={{ span: 2, offset: 5 }} padding="0">
+            <Col lg={{ span: 4 }} padding="0">
+              <Stack>
+                <Timer
+                  initialTime={30}
+                  timerState={timerState}
+                  onTimeUp={() => {
+                    setTimerState(false); // Ferma il timer
+                    setRoundResult(false);
+                  }}
+                />
+                <RoundState
+                  roundState={roundState}
+                  roundResult={roundResult}
+                  gameFinished={gameFinished}
+                  setRoundState={setRoundState}
+                  //setTimeLeft={setTimeLeft}
+                  setRoundResult={setRoundResult}
+                />
+              </Stack>
+            </Col>
+
+            <Col lg={{ span: 2, offset: 1 }} padding="0">
               {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}
               Round Card:
               {currentCard && (
@@ -224,6 +253,9 @@ function NewGame() {
                 />
               )}
             </Col>
+            <Col lg={{ span: 4 }} padding="0">
+              <h1>Round {roundState}/5</h1>
+            </Col>
           </Row>
         </Container>
         <CardList
@@ -231,23 +263,23 @@ function NewGame() {
           roundResult={roundResult}
           handleCompare={handleCompare}
         />
-        <Timer
+        {/* <Timer
           initialTime={30}
           timerState={timerState}
           onTimeUp={() => {
             setTimerState(false); // Ferma il timer
             setRoundResult(false);
           }}
-        />
+        /> */}
 
-        <RoundState
+        {/* <RoundState
           roundState={roundState}
           roundResult={roundResult}
           gameFinished={gameFinished}
           setRoundState={setRoundState}
           //setTimeLeft={setTimeLeft}
           setRoundResult={setRoundResult}
-        />
+        /> */}
       </>
     );
   }

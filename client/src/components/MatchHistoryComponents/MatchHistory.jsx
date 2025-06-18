@@ -14,13 +14,10 @@ function MatchHistory() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("useEffect MatchHistory");
     let isMounted = true;
     // Qui puoi aggiungere la logica per recuperare la storia delle partite
     const fetchMatchHistory = async () => {
-      console.log("useEffect MatchHistory");
       if (!user || !user.username) {
-        console.log(user);
         setLoading(false);
         return; // Esci dal useEffect se user è undefined
       }
@@ -74,7 +71,7 @@ function MatchHistory() {
                     ? "Sconfitta"
                     : "-"}
                   <br />
-                  Carte totali: {game.totalCards ?? "-"}
+                  {console.log(game)}
                 </Card.Text>
               </Card.Body>
             </Card>

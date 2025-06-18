@@ -14,9 +14,11 @@ function RoundState({
     <div>
       {roundResult !== null && (
         <>
-          <Alert variant="info">
-            Round {roundState} - {roundResult ? "Vinto!" : "Perso!"}
-          </Alert>
+          {roundResult === true ? (
+            <Alert variant="success">Hai vinto il round!</Alert>
+          ) : (
+            <Alert variant="danger">Hai perso il round!</Alert>
+          )}
           {gameFinished != null ? (
             <Button as={Link} to="/new-game/recap">
               Termina partita

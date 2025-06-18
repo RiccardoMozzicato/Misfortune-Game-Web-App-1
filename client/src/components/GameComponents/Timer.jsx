@@ -24,8 +24,9 @@ function Timer({ initialTime, timerState, onTimeUp }) {
 
   return (
     <div>
-      <h1>Time left: {timeLeft} seconds</h1>
-      {timeLeft === 0 && <p>Time Expired!</p>}
+      {timeLeft > 0 && <h1>Time left: {timeLeft} seconds</h1>}
+
+      {timeLeft === 0 && <h1>Time Expired!</h1>}
     </div>
   );
 }

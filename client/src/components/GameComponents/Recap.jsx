@@ -7,7 +7,7 @@ import { useUser } from "../../context/userContext.jsx";
 import API from "../../API/API.mjs";
 
 function Recap({ gameFinished, roundLost, gameCards, gameId }) {
-  const { isLoggedIn } = useUser();
+  const { user, loggedIn } = useUser();
   const navigate = useNavigate();
 
   const handleNewGame = () => {
@@ -21,7 +21,8 @@ function Recap({ gameFinished, roundLost, gameCards, gameId }) {
 
   return (
     <Container>
-      {isLoggedIn ? (
+      {console.log("Logged in Recap:", loggedIn, user)}
+      {loggedIn ? (
         <>
           <Row>
             <Col>
@@ -39,7 +40,10 @@ function Recap({ gameFinished, roundLost, gameCards, gameId }) {
           </Row>
         </>
       ) : (
-        <p>Hai finito la demo, effettua il login e gioca con il tuo account!</p>
+        <>
+          <h3>Hai finito la demo</h3>
+          <p>Effettua il login e gioca con il tuo account!</p>
+        </>
       )}
 
       <Row>
@@ -56,7 +60,7 @@ function Recap({ gameFinished, roundLost, gameCards, gameId }) {
       <>
         <CardList initialCards={gameCards} recap={true} />
       </>
-      <Row>
+      <Row className="mt-3">
         <Col>
           <Button onClick={handleNewGame}>Inizia Nuova Partita</Button>
         </Col>

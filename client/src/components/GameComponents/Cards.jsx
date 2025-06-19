@@ -1,11 +1,13 @@
 import React from "react";
-import { Container, Col, Card, Button, Row } from "react-bootstrap";
+import { Container, Col, Card, Button, Row, Stack } from "react-bootstrap";
+import ButtonChoice from "./ButtonChoice";
 
 function Cards(props) {
   return (
     <>
       {/* Se roundCard è true, non mostro il bordo della carta */}
       <Card
+        className={props.recap === true ? "recapCards" : null}
         style={
           props.roundCard
             ? {
@@ -13,57 +15,67 @@ function Cards(props) {
                 padding: 0,
               }
             : {
-                height: "450px",
+                height: "350px",
                 padding: 0,
               }
         }
         {...(!props.roundCard ? { border: "primary" } : {})}
       >
-        <Card.Img
-          style={{ height: "200px" }}
-          className="img-fluid"
-          variant="top"
-          src={props.cards.url}
-        />
-        <Card.Body style={{ paddingTop: "1rem" }}>
-          <Card.Subtitle className="cardName">{props.cards.name}</Card.Subtitle>
-          <Card.Subtitle className="mt-2">
-            {props.roundCard ? null : <p className="red">Misfortune index: </p>}
+        <Col>
+          <Card.Img
+            //style={{ height: "200px" }}
+            className="img-fluid"
+            variant="top"
+            src={props.cards.url}
+          />
+          <Card.Body style={{ padding: 0, paddingTop: "1rem" }}>
+            <Container>
+              <Card.Subtitle className="cardName">
+                {props.cards.name}
+              </Card.Subtitle>
 
-            {props.cards.misfortune_index}
-          </Card.Subtitle>
-
-          {/* Se la carta è una roundCard, non mostro i bottoni per il confronto*/}
-          {!props.roundCard ? (
-            <Row lg="2" className="mt-2">
-              <Col>
-                {!props.recap ? (
-                  <Button
-                    title="Stai posizionando la carta a sinistra"
-                    variant="secondary"
-                    onClick={props.prev}
-                    // Se disable è passato come prop, disabilito il bottone
-                    disabled={props.disable != null ? true : false}
-                  >
-                    <i className="bi bi-arrow-left fs-3"></i>
-                  </Button>
-                ) : null}
-              </Col>
-              <Col>
-                {!props.recap ? (
-                  <Button
-                    title="Stai posizionando la carta a destra"
-                    variant="secondary"
-                    onClick={props.next}
-                    disabled={props.disable != null ? true : false}
-                  >
-                    <i className="bi bi-arrow-right fs-3"></i>
-                  </Button>
-                ) : null}
-              </Col>
-            </Row>
-          ) : null}
-        </Card.Body>
+              {/* Se la carta è una roundCard, non mostro i bottoni per il confronto*/}
+              {!props.roundCard ? (
+                <Row>
+                  <Col>
+                    {!props.recap ? (
+                      <ButtonChoice
+                        title="Stai posizionando la carta a sinistra"
+                        onClick={props.prev}
+                        className="bi bi-arrow-left fs-3"
+                        disable={props.disable}
+                      ></ButtonChoice>
+                    ) : null}
+                  </Col>
+                  <Col>
+                    <Card.Subtitle className="mt-2">
+                      <Stack gap={0}>
+                        <div>
+                          {props.roundCard ? null : (
+                            <p className="red">Misfortune index: </p>
+                          )}
+                        </div>
+                        <div>
+                          <h3>{props.cards.misfortune_index}</h3>
+                        </div>
+                      </Stack>
+                    </Card.Subtitle>
+                  </Col>
+                  <Col>
+                    {!props.recap ? (
+                      <ButtonChoice
+                        title="Stai posizionando la carta a destra"
+                        onClick={props.next}
+                        className="bi bi-arrow-right fs-3"
+                        disable={props.disable}
+                      ></ButtonChoice>
+                    ) : null}
+                  </Col>
+                </Row>
+              ) : null}
+            </Container>
+          </Card.Body>
+        </Col>
       </Card>
     </>
   );

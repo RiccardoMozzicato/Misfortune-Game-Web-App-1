@@ -1,9 +1,41 @@
 import { useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Container, Col, Button, Stack, ListGroup, Row } from "react-bootstrap";
 import { useUser } from "../context/userContext.jsx";
+import { useGame } from "../context/gameContext.jsx";
+import API from "../API/API.mjs";
 
 function Homepage() {
+  const navigate = useNavigate();
+  const {
+    setGameStarted,
+    setGameCards,
+    setRoundCards,
+    setInitialCards,
+    setRoundState,
+    setGameId,
+    setError,
+  } = useGame();
+
+  const startGame = async () => {
+    let result;
+    try {
+      result = await API.startGame();
+      setGameCards(result);
+      setGameStarted(true);
+      setGameId(result.gameId); // Imposto l'ID della partita
+      setRoundCards(result.roundCards);
+      const sortedInitialCards = result.initialCards.sort(
+        (a, b) => a.misfortune_index - b.misfortune_index
+      );
+      setInitialCards(sortedInitialCards);
+      setRoundState(1); // Imposto lo stato del round a 1 quando clicchiamo inizia partita
+    } catch (err) {
+      setError("Errore nel recupero delle carte dal server.");
+      return;
+    }
+  };
+
   return (
     <>
       <Container className="mt-3">
@@ -14,7 +46,12 @@ function Homepage() {
               La versione single player del gioco da tavolo <br></br>“Stuff
               Happens”.
             </p>
-            <Button as={Link} to="/new-game">
+            <Button
+              onClick={() => {
+                startGame();
+                navigate("/new-game");
+              }}
+            >
               Nuova Partita
             </Button>
 

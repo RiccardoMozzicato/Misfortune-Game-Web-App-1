@@ -6,7 +6,9 @@ function CardList({ initialCards, roundResult, handleCompare, recap }) {
   return (
     <div>
       <Container fluid>
-        <h1>Cards in your hand</h1>
+        <Row>
+          <h1>Carte nella tua mano</h1>
+        </Row>
         <Row>
           {initialCards.map((card, index) => (
             <Col lg={2} key={index}>

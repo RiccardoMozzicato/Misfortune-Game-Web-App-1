@@ -11,6 +11,7 @@ import Recap from "./components/GameComponents/Recap.jsx";
 import MatchHistory from "./components/MatchHistoryComponents/MatchHistory.jsx";
 
 import { useUser } from "./context/userContext.jsx";
+import { GameProvider } from "./context/gameContext.jsx";
 
 import API from "./API/API.mjs";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -30,19 +31,21 @@ function App() {
   }, []);
 
   return (
-    <Routes>
-      <Route element={<DefaultLayout />}>
-        <Route
-          path="/login"
-          element={loggedIn ? <Navigate replace to="/" /> : <LoginForm />}
-        />
-        <Route path="/" element={<Homepage games={games} />} />
-        <Route path="/new-game" element={<NewGame />}>
-          <Route path="recap" element={<Recap />} />
+    <GameProvider>
+      <Routes>
+        <Route element={<DefaultLayout />}>
+          <Route
+            path="/login"
+            element={loggedIn ? <Navigate replace to="/" /> : <LoginForm />}
+          />
+          <Route path="/" element={<Homepage games={games} />} />
+          <Route path="/new-game" element={<NewGame />}>
+            <Route path="recap" element={<Recap />} />
+          </Route>
+          <Route path="/match-history" element={<MatchHistory />} />
         </Route>
-        <Route path="/match-history" element={<MatchHistory />} />
-      </Route>
-    </Routes>
+      </Routes>
+    </GameProvider>
   );
 }
 

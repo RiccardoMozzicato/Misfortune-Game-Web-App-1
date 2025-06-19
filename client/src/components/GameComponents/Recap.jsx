@@ -4,11 +4,13 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import CardList from "./CardList.jsx";
 import { useNavigate } from "react-router";
 import { useUser } from "../../context/userContext.jsx";
+import { useGame } from "../../context/gameContext.jsx";
 import API from "../../API/API.mjs";
 
-function Recap({ gameFinished, roundLost, gameCards, gameId }) {
+function Recap() {
   const { user, loggedIn } = useUser();
   const navigate = useNavigate();
+  const { gameFinished, roundLost, gameCards, gameId } = useGame();
 
   const handleNewGame = () => {
     try {

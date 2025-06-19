@@ -23,7 +23,7 @@ function Cards(props) {
       >
         <Col>
           <Card.Img
-            //style={{ height: "200px" }}
+            style={{ maxHeight: "150px" }}
             className="img-fluid"
             variant="top"
             src={props.cards.url}

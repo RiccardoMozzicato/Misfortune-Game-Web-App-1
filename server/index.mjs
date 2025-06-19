@@ -136,7 +136,7 @@ app.get("/api/start-game", async (req, res) => {
   try {
     const gameId = await createGame({
       createdAt: new dayjs().toISOString(),
-      userId: req.user?.id || 0, // Assuming a user ID of 1 for testing purposes
+      userId: req.user?.id || null, // Assuming a user ID of 1 for testing purposes
     });
 
     const allCards = await listCards();
@@ -174,17 +174,21 @@ app.get("/api/start-game", async (req, res) => {
 
 // getMatchHistory
 app.get("/api/games/:username", isLoggedIn, async (req, res) => {
-  let games;
+  let games, initCards, rounds;
   try {
     games = await getGameByUser(req.params.username);
   } catch {
-    return res.status(500).end();
+    return res.status(500).json({ error: "Impossible to create the user." });
   }
 
   const gamesJson = [];
   for (const game of games) {
     // INSERIRE TRY CATCH PER ERRORI
-    const initCards = await listInitialCardsByGame(game.id);
+    try {
+      initCards = await listInitialCardsByGame(game.id);
+    } catch (e) {
+      return res.status(500).json({ error: "Error fetching initial cards." });
+    }
     const json = {
       id: game.id,
       createdAt: game.createdAt,
@@ -196,7 +200,11 @@ app.get("/api/games/:username", isLoggedIn, async (req, res) => {
       rounds: [],
     };
 
-    const rounds = await listRoundsByGame(game.id);
+    try {
+      rounds = await listRoundsByGame(game.id);
+    } catch (e) {
+      return res.status(500).json({ error: "Error fetching rounds." });
+    }
 
     for (const round of rounds) {
       json.rounds.push({

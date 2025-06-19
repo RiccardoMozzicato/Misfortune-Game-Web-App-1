@@ -38,9 +38,13 @@ function Recap() {
                 <Card.Body>
                   <Card.Text>
                     {gameFinished === true ? (
-                      <div className="pastelgreen">Partita Vinta!</div>
+                      <div style={{ fontSize: "3rem" }} className="pastelgreen">
+                        Partita Vinta!
+                      </div>
                     ) : (
-                      <div className="pastelred">Partita Persa!</div>
+                      <div style={{ fontSize: "3rem" }} className="pastelred">
+                        Partita Persa!
+                      </div>
                     )}
                   </Card.Text>
                   <Card.Text>

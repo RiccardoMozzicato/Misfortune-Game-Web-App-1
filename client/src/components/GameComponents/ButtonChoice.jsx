@@ -10,6 +10,7 @@ function ButtonChoice({ title, className, disable, onClick }) {
         pointerEvents: disable != null ? "none" : "auto",
         opacity: disable != null ? 0.5 : 1,
         cursor: disable != null ? "not-allowed" : "pointer",
+        fontSize: "0.5rem",
       }}
       aria-disabled={disable}
       tabIndex={disable ? -1 : 0}

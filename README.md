@@ -16,6 +16,7 @@
 
 - POST `/api/users` — Crea un nuovo utente
 - GET `/api/users` — Lista tutti gli utenti
+
 - GET `/api/cards` — Lista tutte le carte
 - GET `/api/cards/:id` — Dettaglio carta
 

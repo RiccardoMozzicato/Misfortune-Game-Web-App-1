@@ -22,6 +22,7 @@ import {
   updateRound,
   updateGame,
   deleteGame,
+  listInitialCardsByGame,
 } from "./dao.mjs";
 import dayjs from "dayjs";
 import path from "path";
@@ -244,12 +245,39 @@ app.delete("/api/games/:gameId", async (req, res) => {
 
 // getMatchHistory
 app.get("/api/games/:username", isLoggedIn, async (req, res) => {
+  let games;
   try {
-    const games = await getGameByUser(req.params.username);
-    res.json(games);
+    games = await getGameByUser(req.params.username);
   } catch {
-    res.status(500).end();
+    return res.status(500).end();
   }
+
+  const gamesJson = [];
+  for (const game of games) {
+    const initCards = await listInitialCardsByGame(game.id);
+    const json = {
+      id: game.id,
+      createdAt: game.createdAt,
+      totalCards: game.totalCards,
+      outcome: game.outcome,
+      initialCards: initCards.map((card) => ({
+        name: card.name,
+      })),
+      rounds: [],
+    };
+
+    const rounds = await listRoundsByGame(game.id);
+    console.log(rounds);
+    for (const round of rounds) {
+      json.rounds.push({
+        won: round.won,
+        roundNumber: round.roundNumber,
+        name: round.name,
+      });
+    }
+    gamesJson.push(json);
+  }
+  res.json(gamesJson);
 });
 
 // INITIAL CARDS ROUTES

@@ -280,7 +280,7 @@ export const createRound = (round) => {
 export const listRoundsByGame = (gameId) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT  gameId, roundNumber, won, c.name FROM Round r JOIN Card c ON c.id=r.cardId WHERE gameId = ?";
+      "SELECT r.roundNumber,won,c.name FROM Round r JOIN Card c ON c.id=r.cardId WHERE gameId = ?";
     db.all(sql, [gameId], (err, rows) => {
       if (err) reject(err);
       else resolve(rows);
@@ -338,6 +338,32 @@ export const updateRound = (roundId, won) => {
     db.run(sql, [won, roundId], function (err) {
       if (err) reject(err);
       else resolve(this.changes > 0);
+    });
+  });
+};
+
+export const listCardsByRoundByGame = (gameId) => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT c.* FROM Round r
+      JOIN Card c ON r.cardId = c.id
+      WHERE r.gameId = ?
+    `;
+    db.all(sql, [gameId], (err, rows) => {
+      if (err) reject(err);
+      else
+        resolve(
+          rows.map(
+            (row) =>
+              new Card(
+                row.id,
+                row.name,
+                row.url,
+                row.misfortune_index,
+                row.theme
+              )
+          )
+        );
     });
   });
 };

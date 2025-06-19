@@ -24,7 +24,7 @@ function Homepage() {
             <ListGroup>
               <ListGroup.Item>
                 <Row className="align-items-center">
-                  <i class="bi bi-1-circle-fill"></i>
+                  <i className="bi bi-1-circle-fill"></i>
                   <p>
                     Hai 3 carte iniziali, ognuna con una situazione sfortunata e
                     il suo indice da 1 a 100.

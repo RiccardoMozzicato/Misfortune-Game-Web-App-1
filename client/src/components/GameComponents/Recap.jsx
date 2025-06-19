@@ -27,12 +27,20 @@ function Recap({ gameFinished, roundLost, gameCards, gameId }) {
           <Row>
             <Col>
               <h1>Riepilogo Partita</h1>
-              <Card>
+              <Card style={{ padding: 0 }}>
                 <Card.Body>
-                  <Card.Title>Esito Finale</Card.Title>
                   <Card.Text>
-                    {gameFinished === true && "Partita Vinta!"}
-                    {gameFinished === false && "Partita Persa!"}
+                    {gameFinished === true ? (
+                      <h3 className="pastelgreen">Partita Vinta!</h3>
+                    ) : (
+                      <h3 className="pastelred">Partita Persa!</h3>
+                    )}
+                  </Card.Text>
+                  <Card.Text>
+                    <h4>Carte Totali: {gameCards.length}</h4>
+                  </Card.Text>
+                  <Card.Text>
+                    <h4>Round Persi: {roundLost}</h4>
                   </Card.Text>
                 </Card.Body>
               </Card>
@@ -46,17 +54,6 @@ function Recap({ gameFinished, roundLost, gameCards, gameId }) {
         </>
       )}
 
-      <Row>
-        <Col>
-          <Card>
-            <Card.Body>
-              <Card.Title>Dettagli Partita</Card.Title>
-              <Card.Text>Carte Totali: {gameCards.length}</Card.Text>
-              <Card.Text>Round Persi: {roundLost}</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
       <>
         <CardList initialCards={gameCards} recap={true} />
       </>

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
+import { ProgressBar } from "react-bootstrap";
 
 function Timer({ initialTime, timerState, onTimeUp }) {
   const [timeLeft, setTimeLeft] = useState(initialTime);
@@ -25,7 +26,11 @@ function Timer({ initialTime, timerState, onTimeUp }) {
   return (
     <div>
       {timeLeft > 0 && <h1>Time left: {timeLeft} seconds</h1>}
-
+      <ProgressBar
+        variant={timeLeft <= 5 ? "danger" : "success"}
+        animated
+        now={(timeLeft / initialTime) * 100}
+      />
       {timeLeft === 0 && <h1>Time Expired!</h1>}
     </div>
   );

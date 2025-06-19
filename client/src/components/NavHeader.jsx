@@ -23,7 +23,7 @@ function NavHeader() {
       <Navbar.Text>
         {loggedIn ? (
           location.pathname === "/match-history" ? null : (
-            <Link to="/match-history">Match History</Link>
+            <Link to="/match-history">Cronologia</Link>
           )
         ) : (
           <>

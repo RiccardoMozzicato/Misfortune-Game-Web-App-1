@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import CardList from "./CardList.jsx";
@@ -16,8 +16,13 @@ function Recap({ gameFinished, roundLost, gameCards, gameId }) {
     } catch (error) {
       alert("Errore durante l'eliminazione della partita. Riprova più tardi.");
     }
-    navigate("/new-game"); // Naviga verso la nuova partita
   };
+
+  useEffect(() => {
+    if (!loggedIn) {
+      handleNewGame();
+    }
+  }, []);
 
   return (
     <Container>
@@ -59,7 +64,7 @@ function Recap({ gameFinished, roundLost, gameCards, gameId }) {
       </>
       <Row className="mt-3">
         <Col>
-          <Button onClick={handleNewGame}>Inizia Nuova Partita</Button>
+          <Button onClick={() => navigate("/")}>Inizia Nuova Partita</Button>
         </Col>
       </Row>
     </Container>

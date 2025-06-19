@@ -150,7 +150,7 @@ function MatchHistory() {
                     setSelectedGame(game);
                   }}
                 >
-                  Carte nella partita
+                  Maggiori dettagli
                 </Button>
               </Card.Body>
             </Card>

@@ -244,7 +244,7 @@ function NewGame() {
 
             <Col lg={{ span: 2, offset: 1 }} padding="0">
               {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}
-              Round Card:
+              Carta in palio:
               {currentCard && (
                 <Cards
                   cards={currentCard}
@@ -263,23 +263,6 @@ function NewGame() {
           roundResult={roundResult}
           handleCompare={handleCompare}
         />
-        {/* <Timer
-          initialTime={30}
-          timerState={timerState}
-          onTimeUp={() => {
-            setTimerState(false); // Ferma il timer
-            setRoundResult(false);
-          }}
-        /> */}
-
-        {/* <RoundState
-          roundState={roundState}
-          roundResult={roundResult}
-          gameFinished={gameFinished}
-          setRoundState={setRoundState}
-          //setTimeLeft={setTimeLeft}
-          setRoundResult={setRoundResult}
-        /> */}
       </>
     );
   }

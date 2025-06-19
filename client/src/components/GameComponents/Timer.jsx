@@ -27,7 +27,13 @@ function Timer({ initialTime, timerState, onTimeUp }) {
     <div>
       {timeLeft > 0 && <h1>Time left: {timeLeft} seconds</h1>}
       <ProgressBar
-        variant={timeLeft <= 5 ? "danger" : "success"}
+        variant={
+          timerState !== false
+            ? timeLeft <= 5
+              ? "danger"
+              : "success"
+            : "secondary"
+        }
         animated
         now={(timeLeft / initialTime) * 100}
       />

@@ -39,6 +39,7 @@ function Cards(props) {
               <Col>
                 {!props.recap ? (
                   <Button
+                    title="Stai posizionando la carta a sinistra"
                     variant="secondary"
                     onClick={props.prev}
                     // Se disable è passato come prop, disabilito il bottone
@@ -51,6 +52,7 @@ function Cards(props) {
               <Col>
                 {!props.recap ? (
                   <Button
+                    title="Stai posizionando la carta a destra"
                     variant="secondary"
                     onClick={props.next}
                     disabled={props.disable != null ? true : false}

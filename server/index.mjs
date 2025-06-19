@@ -166,7 +166,6 @@ app.get("/api/start-game", async (req, res) => {
       })),
     });
   } catch (e) {
-    console.error("Error starting game:", e);
     res.status(503).json({ error: "Impossible to start the game." });
     return;
   }

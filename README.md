@@ -154,6 +154,7 @@
 ## Screenshot
 
 ![Screenshot](./img/screenshot.jpg)
+![Screenshot](./img/screenshot2.jpg)
 
 ## Users Credentials
 

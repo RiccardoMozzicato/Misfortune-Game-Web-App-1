@@ -28,7 +28,6 @@ function Recap() {
 
   return (
     <Container>
-      {console.log("Logged in Recap:", loggedIn, user)}
       {loggedIn ? (
         <>
           <Row>

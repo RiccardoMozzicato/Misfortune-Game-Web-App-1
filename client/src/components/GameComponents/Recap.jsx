@@ -38,16 +38,16 @@ function Recap() {
                 <Card.Body>
                   <Card.Text>
                     {gameFinished === true ? (
-                      <h3 className="pastelgreen">Partita Vinta!</h3>
+                      <div className="pastelgreen">Partita Vinta!</div>
                     ) : (
-                      <h3 className="pastelred">Partita Persa!</h3>
+                      <div className="pastelred">Partita Persa!</div>
                     )}
                   </Card.Text>
                   <Card.Text>
-                    <h4>Carte Totali: {gameCards.length}</h4>
+                    <div>Carte Totali: {gameCards.length}</div>
                   </Card.Text>
                   <Card.Text>
-                    <h4>Round Persi: {roundLost}</h4>
+                    <div>Round Persi: {roundLost}</div>
                   </Card.Text>
                 </Card.Body>
               </Card>

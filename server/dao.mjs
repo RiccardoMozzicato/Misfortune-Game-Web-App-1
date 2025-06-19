@@ -7,6 +7,7 @@ const db = new sqlite.Database("SQLite.sqlite", (err) => {
   if (err) throw err;
 });
 
+db.run("PRAGMA foreign_keys = ON");
 /** USER DAO **/
 
 export const createUser = (user) => {
@@ -59,22 +60,6 @@ export const getUserByUsername = (username, password) => {
 };
 
 /** CARD DAO **/
-
-export const createCard = (card) => {
-  return new Promise((resolve, reject) => {
-    const url = `/images/cards/${card.url}`;
-    const sql =
-      "INSERT INTO Card(name, url, misfortune_index, theme) VALUES (?, ?, ?, ?)";
-    db.run(
-      sql,
-      [card.name, url, card.misfortune_index, card.theme],
-      function (err) {
-        if (err) reject(err);
-        else resolve(this.lastID);
-      }
-    );
-  });
-};
 
 export const listCards = () => {
   return new Promise((resolve, reject) => {
@@ -136,7 +121,6 @@ export const createGame = (game) => {
   });
 };
 
-//to fix: espandere le info per la cronologia (initial cards, per ogni round, card.name ) farla diventare 'cronologia'
 export const getGameByUser = (username) => {
   return new Promise((resolve, reject) => {
     const sql = `
@@ -227,33 +211,6 @@ export const listInitialCardsByGame = (gameId) => {
   });
 };
 
-export const getInitialCardsByGame = (gameId) => {
-  return new Promise((resolve, reject) => {
-    const sql = `
-      SELECT ic.id, c.name, c.url, c.misfortune_index, c.theme
-      FROM InitialCards ic
-      JOIN Card c ON ic.cardId = c.id
-      WHERE ic.gameId = ?
-    `;
-    db.all(sql, [gameId], (err, rows) => {
-      if (err) reject(err);
-      else
-        resolve(
-          rows.map(
-            (row) =>
-              new initialCards(
-                row.id,
-                row.name,
-                row.url,
-                row.misfortune_index,
-                row.theme
-              )
-          )
-        );
-    });
-  });
-};
-
 /** ROUND DAO **/
 
 export const createRound = (round) => {
@@ -284,28 +241,6 @@ export const listRoundsByGame = (gameId) => {
     db.all(sql, [gameId], (err, rows) => {
       if (err) reject(err);
       else resolve(rows);
-    });
-  });
-};
-
-export const listRoundsWonByGame = (gameId) => {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM Round WHERE gameId = ? AND won = 1";
-    db.all(sql, [gameId], (err, rows) => {
-      if (err) reject(err);
-      else
-        resolve(
-          rows.map(
-            (row) =>
-              new Round(
-                row.id,
-                row.gameId,
-                row.cardId,
-                row.won,
-                row.roundNumber
-              )
-          )
-        );
     });
   });
 };

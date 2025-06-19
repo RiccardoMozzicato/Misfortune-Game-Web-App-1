@@ -57,7 +57,6 @@ function NewGame() {
   // Reset dello stato del gioco quando si naviga verso /new-game da qualsiasi altra pagina
   useEffect(() => {
     if (location.pathname === "/new-game") {
-      setGameStarted(false);
       setGameFinished(null);
       setGameCards([]);
       setRoundCards([]);
@@ -201,75 +200,73 @@ function NewGame() {
     ); // Renderizza solo Outlet se il percorso è /new-game/recap
   }
 
-  if (gameStarted) {
-    return (
-      <>
-        <Container>
-          <Row>
-            <Col lg={{ span: 4 }} padding="0">
-              {gameFinished === null ? (
-                <>
-                  <Stack>
-                    <Timer
-                      initialTime={30}
-                      timerState={timerState}
-                      onTimeUp={() => {
-                        setTimerState(false); // Ferma il timer
-                        setRoundResult(false);
-                      }}
-                    />
-                    <RoundState
-                      roundState={roundState}
-                      roundResult={roundResult}
-                      gameFinished={gameFinished}
-                      setRoundState={setRoundState}
-                      //setTimeLeft={setTimeLeft}
-                      setRoundResult={setRoundResult}
-                    />
-                  </Stack>
-                </>
-              ) : /* Se il numero di carte è 6 e lo stato del round è minore o uguale a 5, significa che la partita è vinta*/
-              gameFinished === true ? (
-                <h1> Partita Vinta! </h1>
-              ) : gameFinished === false ? (
-                <h1> Partita Persa! </h1>
-              ) : null}
+  return (
+    <>
+      <Container>
+        <Row>
+          <Col lg={{ span: 4 }} padding="0">
+            {gameFinished === null ? (
+              <>
+                <Stack>
+                  <Timer
+                    initialTime={30}
+                    timerState={timerState}
+                    onTimeUp={() => {
+                      setTimerState(false); // Ferma il timer
+                      setRoundResult(false);
+                    }}
+                  />
+                  <RoundState
+                    roundState={roundState}
+                    roundResult={roundResult}
+                    gameFinished={gameFinished}
+                    setRoundState={setRoundState}
+                    //setTimeLeft={setTimeLeft}
+                    setRoundResult={setRoundResult}
+                  />
+                </Stack>
+              </>
+            ) : /* Se il numero di carte è 6 e lo stato del round è minore o uguale a 5, significa che la partita è vinta*/
+            gameFinished === true ? (
+              <h1> Partita Vinta! </h1>
+            ) : gameFinished === false ? (
+              <h1> Partita Persa! </h1>
+            ) : null}
 
-              {gameFinished != null && (
-                <Button as={Link} to="/new-game/recap">
-                  Termina partita
-                </Button>
-              )}
-            </Col>
+            {gameFinished != null && (
+              <Button as={Link} to="/new-game/recap">
+                Termina partita
+              </Button>
+            )}
+          </Col>
 
-            <Col lg={{ span: 2, offset: 1 }} padding="0">
-              <Container>
-                {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}
-                <Row className="justify-content-center">Carta in palio:</Row>
-                <Row>
-                  {currentCard && (
-                    <Cards
-                      cards={currentCard}
-                      // Passo roundCard == true per indicare che questa è la carta del round corrente
-                      roundCard={true}
-                    />
-                  )}
-                </Row>
-              </Container>
-            </Col>
-            <Col lg={{ span: 4 }} padding="0">
-              <h1>Round {roundState}/5</h1>
-            </Col>
-          </Row>
-        </Container>
-        <CardList
-          initialCards={initialCards}
-          roundResult={roundResult}
-          handleCompare={handleCompare}
-        />
-      </>
-    );
-  }
+          <Col lg={{ span: 2, offset: 1 }} padding="0">
+            <Container>
+              {/* Se esiste mostra la currentCard che poi è quella in gioco per quel round */}
+              <Row className="justify-content-center">Carta in palio:</Row>
+              <Row>
+                {currentCard && (
+                  <Cards
+                    cards={currentCard}
+                    // Passo roundCard == true per indicare che questa è la carta del round corrente
+                    roundCard={true}
+                  />
+                )}
+              </Row>
+            </Container>
+          </Col>
+          <Col lg={{ span: 4 }} padding="0">
+            <h1>Round {roundState}/5</h1>
+          </Col>
+        </Row>
+      </Container>
+      <CardList
+        initialCards={initialCards}
+        roundResult={roundResult}
+        handleCompare={handleCompare}
+      />
+    </>
+  );
 }
 
 export default NewGame;

@@ -24,6 +24,7 @@ function MyVerticallyCenteredModal(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <span>Carte iniziali:</span>
         {initialCards && Array.isArray(initialCards) ? (
           <ul>
             {initialCards.map((element, idx) => (
@@ -34,6 +35,7 @@ function MyVerticallyCenteredModal(props) {
           <span>Nessuna carta iniziale disponibile.</span>
         )}
 
+        <span>Carte giocate nei round: </span>
         {rounds && Array.isArray(rounds) ? (
           <ul>
             {rounds.map((round, idx) => (

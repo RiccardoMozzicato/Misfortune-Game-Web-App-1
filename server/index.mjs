@@ -9,19 +9,17 @@ import {
   createUser,
   listUsers,
   getUserByUsername,
-  createCard,
   listCards,
   getCardById,
   createGame,
   getGameByUser,
+  updateGame,
+  deleteGame,
   createInitialCards,
   getRoundById,
   createRound,
   listRoundsByGame,
-  listRoundsWonByGame,
   updateRound,
-  updateGame,
-  deleteGame,
   listInitialCardsByGame,
 } from "./dao.mjs";
 import dayjs from "dayjs";
@@ -82,7 +80,7 @@ app.use(passport.authenticate("session"));
 
 /* ROUTES */
 
-// USER ROUTES
+// USER ROUTE -- CREATA MA NON UTILIZZATA PERCHE' UTENTE INSERITO MANUALMENTE NEL DB CON CRYPTAZIONE
 app.post(
   "/api/users",
   [check("username").notEmpty(), check("password").notEmpty()],
@@ -100,6 +98,7 @@ app.post(
   }
 );
 
+// GET ALL USERS -- INUTILIZZATA
 app.get("/api/users", async (req, res) => {
   try {
     const users = await listUsers();
@@ -129,51 +128,10 @@ app.get("/api/cards/:id", async (req, res) => {
   }
 });
 
-app.post(
-  "/api/cards/",
-  isLoggedIn,
-  [
-    check("name").notEmpty(),
-    check("url").notEmpty(),
-    check("misfortune_index").isNumeric(),
-    check("theme").notEmpty(),
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-    try {
-      const id = await createCard(req.body);
-      res.status(201).json({ id });
-    } catch (e) {
-      res.status(503).json({ error: "Impossible to create the card." });
-    }
-  }
-);
-
 // GAME ROUTES
 
 // CREATE A NEW GAME
-app.post(
-  "/api/games/",
-  //isLoggedIn,
-  [check("createdAt").notEmpty(), check("userId").isNumeric()],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-    try {
-      const id = await createGame(req.body);
-      res.status(201).json({ id });
-    } catch (e) {
-      res.status(503).json({ error: "Impossible to create the game." });
-    }
-  }
-);
 
-// GAMES ROUTS
 app.get("/api/start-game", async (req, res) => {
   try {
     const gameId = await createGame({
@@ -208,9 +166,48 @@ app.get("/api/start-game", async (req, res) => {
       })),
     });
   } catch (e) {
+    console.error("Error starting game:", e);
     res.status(503).json({ error: "Impossible to start the game." });
     return;
   }
+});
+
+// getMatchHistory
+app.get("/api/games/:username", isLoggedIn, async (req, res) => {
+  let games;
+  try {
+    games = await getGameByUser(req.params.username);
+  } catch {
+    return res.status(500).end();
+  }
+
+  const gamesJson = [];
+  for (const game of games) {
+    // INSERIRE TRY CATCH PER ERRORI
+    const initCards = await listInitialCardsByGame(game.id);
+    const json = {
+      id: game.id,
+      createdAt: game.createdAt,
+      totalCards: game.totalCards,
+      outcome: game.outcome,
+      initialCards: initCards.map((card) => ({
+        name: card.name,
+      })),
+      rounds: [],
+    };
+
+    const rounds = await listRoundsByGame(game.id);
+
+    for (const round of rounds) {
+      json.rounds.push({
+        won: round.won,
+        roundNumber: round.roundNumber,
+        name: round.name,
+      });
+    }
+    gamesJson.push(json);
+  }
+  res.json(gamesJson);
 });
 
 app.patch(
@@ -243,43 +240,6 @@ app.delete("/api/games/:gameId", async (req, res) => {
   }
 });
 
-// getMatchHistory
-app.get("/api/games/:username", isLoggedIn, async (req, res) => {
-  let games;
-  try {
-    games = await getGameByUser(req.params.username);
-  } catch {
-    return res.status(500).end();
-  }
-
-  const gamesJson = [];
-  for (const game of games) {
-    const initCards = await listInitialCardsByGame(game.id);
-    const json = {
-      id: game.id,
-      createdAt: game.createdAt,
-      totalCards: game.totalCards,
-      outcome: game.outcome,
-      initialCards: initCards.map((card) => ({
-        name: card.name,
-      })),
-      rounds: [],
-    };
-
-    const rounds = await listRoundsByGame(game.id);
-    console.log(rounds);
-    for (const round of rounds) {
-      json.rounds.push({
-        won: round.won,
-        roundNumber: round.roundNumber,
-        name: round.name,
-      });
-    }
-    gamesJson.push(json);
-  }
-  res.json(gamesJson);
-});
-
 // INITIAL CARDS ROUTES
 app.post(
   "/api/initial-cards/",
@@ -302,7 +262,6 @@ app.post(
 // ROUND ROUTES
 app.post(
   "/api/rounds/",
-  //isLoggedIn,
   [
     check("gameId").isNumeric(),
     check("cardId").isNumeric(),
@@ -326,16 +285,7 @@ app.post(
 app.get("/api/rounds/:gameId", isLoggedIn, async (req, res) => {
   try {
     const rounds = await listRoundsByGame(req.params.gameId);
-    res.json(rounds);
-  } catch {
-    res.status(500).end();
-  }
-});
-
-app.get("/api/rounds-won/:gameId", isLoggedIn, async (req, res) => {
-  try {
-    const rounds = await listRoundsWonByGame(req.params.gameId);
-    res.json(rounds);
+    res.status(201).json(rounds);
   } catch {
     res.status(500).end();
   }
@@ -360,7 +310,7 @@ app.patch(
     try {
       result = await getRoundById(roundId);
     } catch {
-      res.status(404).json({ error: "Error updating round" });
+      res.status(404).json({ error: "Round not found" });
     }
 
     const oldTimeStamp = dayjs(result.timeStamp);

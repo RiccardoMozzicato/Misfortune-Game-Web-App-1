@@ -1,0 +1,140 @@
+### USER ROUTES
+
+# Create a new user
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpass"
+}
+
+###
+# List all users
+GET http://localhost:3001/api/users
+
+###
+
+### AUTH ROUTES
+
+# Login
+POST http://localhost:3001/api/sessions
+Content-Type: application/json
+
+{
+  "username": "alice123",
+  "password": "ciao"
+}
+
+###
+# Get current session
+GET http://localhost:3001/api/sessions/current
+
+###
+# Logout
+DELETE http://localhost:3001/api/sessions/current
+
+###
+
+### CARD ROUTES
+
+# List all cards
+GET http://localhost:3001/api/cards
+
+###
+# Get card by id
+GET http://localhost:3001/api/cards/1
+
+###
+# Create a new card (requires authentication)
+POST http://localhost:3001/api/cards/
+Content-Type: application/json
+
+{
+  "name": "Test Card",
+  "url": "http://localhost:3001/images/cards/test.jpg",
+  "misfortune_index": 5,
+  "theme": "test"
+}
+
+###
+
+### GAME ROUTES
+
+# Create a new game
+POST http://localhost:3001/api/games/
+Content-Type: application/json
+
+{
+  "createdAt": "2025-06-19T12:00:00.000Z",
+  "userId": 1
+}
+
+###
+# Start a new game
+GET http://localhost:3001/api/start-game
+
+###
+# Update a game
+PATCH http://localhost:3001/api/games/1
+Content-Type: application/json
+
+{
+  "gameId": 1,
+  "totalCards": 8,
+  "outcome": "win"
+}
+
+###
+# Delete a game
+DELETE http://localhost:3001/api/games/1
+
+###
+# Get match history (requires authentication)
+GET http://localhost:3001/api/games/testuser
+
+###
+
+### INITIAL CARDS ROUTES
+
+# Create initial cards (requires authentication)
+POST http://localhost:3001/api/initial-cards/
+Content-Type: application/json
+
+{
+  "gameId": 1,
+  "cardIds": [1,2,3]
+}
+
+###
+
+### ROUND ROUTES
+
+# Create a new round
+POST http://localhost:3001/api/rounds/
+Content-Type: application/json
+
+{
+  "gameId": 1,
+  "cardId": 1,
+  "won": false,
+  "roundNumber": 1
+}
+
+###
+# Get rounds by game (requires authentication)
+GET http://localhost:3001/api/rounds/1
+
+###
+# Update a round
+PATCH http://localhost:3001/api/rounds/1
+Content-Type: application/json
+
+{
+  "misfortuneLeft": 2,
+  "misfortuneRight": 8,
+  "cardId": 1,
+  "timeStamp": "2025-06-19T12:01:00.000Z"
+}
+
+###
